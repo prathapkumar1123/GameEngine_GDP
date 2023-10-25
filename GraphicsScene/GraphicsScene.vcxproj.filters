@@ -27,9 +27,6 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VAOManager.cpp">
-      <Filter>Source Files\Managers</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderManager\ShaderManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
@@ -39,21 +36,27 @@
     <ClCompile Include="InputHandling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LoadScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VAOManager\VAOManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="OpenGlCommons.h">
+    <ClInclude Include="Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderManager.h">
+    <ClInclude Include="GLFW_Callbacks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VAOManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
+    <ClInclude Include="ShaderManager\ShaderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GLFW_Callbacks.h">
+    <ClInclude Include="Globals\OpenGlCommons.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

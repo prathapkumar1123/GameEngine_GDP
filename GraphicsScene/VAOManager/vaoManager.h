@@ -3,7 +3,6 @@
 #include <string>
 #include <map>
 
-
 struct TrianglePlyFile
 {
 	unsigned int v0, v1, v2;
@@ -12,8 +11,8 @@ struct TrianglePlyFile
 struct VertexInfo
 {
 	float x, y, z;
-	float r, g, b, a;
 	float nx, ny, nz;
+	float r, g, b, a;
 };
 
 struct ModelDrawInfo
@@ -45,19 +44,19 @@ public:
 
 	bool findDrawInfoByModelName(std::string filename, ModelDrawInfo& drawInfo);
 
-	std::string getLastError(bool bAndClear = true);
-
 	void setBasePath(std::string basePathWithoutSlash);
 
-	bool updateVAOBuffers(std::string fileName,
+	bool updateVAOBuffers(
+		std::string fileName,
 		ModelDrawInfo& updatedDrawInfo,
-		unsigned int shaderProgramID);
+		unsigned int shaderProgramID
+	);
 
 private:
 
 	bool loadPlyFile_XYZ_N_RGBA(std::string theFileName, ModelDrawInfo& drawInfo);
 
-	std::map<std::string, ModelDrawInfo> mModelInfoMapByName;
+	std::map<std::string, ModelDrawInfo> pModelInfoMapByName;
 
 	std::string pBasePath;
 

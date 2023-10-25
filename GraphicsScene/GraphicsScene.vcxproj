@@ -143,16 +143,17 @@
   <ItemGroup>
     <ClCompile Include="Globals\glad.c" />
     <ClCompile Include="InputHandling.cpp" />
+    <ClCompile Include="LoadScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ShaderManager\ShaderManager.cpp" />
-    <ClCompile Include="VAOManager.cpp" />
+    <ClCompile Include="VAOManager\VAOManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLFW_Callbacks.h" />
+    <ClInclude Include="Globals\OpenGlCommons.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="OpenGlCommons.h" />
-    <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="ShaderManager\ShaderManager.h" />
     <ClInclude Include="VAOManager.h" />
   </ItemGroup>
   <ItemGroup>

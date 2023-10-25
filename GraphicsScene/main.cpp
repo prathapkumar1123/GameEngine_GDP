@@ -18,15 +18,20 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-glm::vec3 g_cameraEye = glm::vec3(0.0, 70.0, 181.0f);
-glm::vec3 g_cameraTarget = glm::vec3(0.0f, 5.0f, 0.0f);
+glm::vec3 g_cameraEye = glm::vec3(0.0, 0.0, 10.0f);
+glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 g_upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+
+float rot = 0.0f;
 
 VAOManager* mMeshManager = NULL;
 
 std::vector<Mesh*> mMeshesToDraw;
 
 void DrawObject(Mesh* pCurrentMesh, glm::mat4 matModel, GLuint shaderProgramID);
+
+void buildScene();
+void loadModelsIntoVAO(unsigned int& shaderProgramId);
 
 static void error_callback(int error, const char* description) {
 	fprintf(stderr, "Error: %s\n", description);
@@ -59,7 +64,7 @@ int main() {
 	glfwSwapInterval(1);
 
 	ShaderManager* shaderManager = new ShaderManager();
-	shaderManager->setBasePath("shaders");
+	shaderManager->setBasePath("assets/shaders");
 
 	Shader vertexShader;
 	vertexShader.fileName = "vertex_shader.glsl";
@@ -78,7 +83,10 @@ int main() {
 	::mMeshManager = new VAOManager();
 	::mMeshManager->setBasePath("assets/models");
 
-	ModelDrawInfo bannerDrawingInfo;
+    loadModelsIntoVAO(shaderProgramID);
+    buildScene();
+
+	/*ModelDrawInfo bannerDrawingInfo;
 	::mMeshManager->loadModelIntoVAO("banner.ply", bannerDrawingInfo, shaderProgramID);
 	std::cout << "Loaded: " << bannerDrawingInfo.NUM_OF_VERTICES << " vertices" << std::endl;
 
@@ -88,9 +96,7 @@ int main() {
     pBanner->bDoNotLight = true;
     pBanner->drawPosition = glm::vec3(0.0f, -30.0f, 0.0f);
 
-    ::mMeshesToDraw.push_back(pBanner);
-
-	double lastTime = glfwGetTime();
+    ::mMeshesToDraw.push_back(pBanner);*/
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -198,6 +204,13 @@ void DrawObject(Mesh* pCurrentMesh, glm::mat4 matModelParent, GLuint shaderProgr
         glUniform1f(bDoNotLight_UL, (GLfloat) GL_FALSE);
     }
 
+    if (pCurrentMesh->simpleName == "side_wall_block_0") {
+        //rot += 0.0001f;
+        //printf("Rotation: %f\n", rot);
+        //pCurrentMesh->setRotationFromEuler(glm::vec3(0.0f, 90.0f, 0.0f));
+
+    }
+
     //uniform bool bUseDebugColour;	
     GLint bUseDebugColour_UL = glGetUniformLocation(shaderProgramID, "bUseDebugColour");
 
@@ -216,7 +229,7 @@ void DrawObject(Mesh* pCurrentMesh, glm::mat4 matModelParent, GLuint shaderProgr
 
 
     ModelDrawInfo modelInfo;
-    if (::g_pMeshManager->findDrawInfoByModelName(pCurrentMesh->getMeshName(), modelInfo)) {
+    if (::mMeshManager->findDrawInfoByModelName(pCurrentMesh->getMeshName(), modelInfo)) {
         // Found it!!!
 
         glBindVertexArray(modelInfo.VAO_ID); 		//  enable VAO (and everything else)
@@ -227,25 +240,17 @@ void DrawObject(Mesh* pCurrentMesh, glm::mat4 matModelParent, GLuint shaderProgr
         glBindVertexArray(0); 			            // disable VAO (and everything else)
     }
 
-    /*glm::mat4 matRemoveScaling = glm::scale(glm::mat4(1.0f),
+    glm::mat4 matRemoveScaling = glm::scale(glm::mat4(1.0f),
         glm::vec3(
             1.0f / pCurrentMesh->drawScale.x,
             1.0f / pCurrentMesh->drawScale.y,
             1.0f / pCurrentMesh->drawScale.z
         ));
 
-    matModel = matModel * matRemoveScaling;*/
+    matModel = matModel * matRemoveScaling;
 
     for (Mesh* pChild : pCurrentMesh->vec_pChildMeshes) {
-
-        // Notice we are passing the "parent" (already transformed) matrix
-        // NOT an identiy matrix
-
-        // if you are using scaling, you can "undo" the scaling
-        // i.e. add the opposite of the scale the parent had
-
         DrawObject(pChild, matModel, shaderProgramID);
-
     }
 
     return;

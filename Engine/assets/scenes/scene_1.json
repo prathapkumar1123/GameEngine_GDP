@@ -1,0 +1,615 @@
+{
+    "scene": {
+      "models": [
+        {
+          "name": "floor",
+          "file": "floor.ply",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            7,
+            2,
+            5
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "setUniformDrawScale": false,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "floor_large",
+          "file": "block.ply",
+          "position": [
+            0,
+            -0.03,
+            0
+          ],
+          "scale": [
+            200,
+            0.02,
+            200
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "setUniformDrawScale": false,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "floor_detail_1",
+          "file": "floor_detail.ply",
+          "position": [
+            0.5,
+            0,
+            1.5
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "setUniformDrawScale": false,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "floor_detail_2",
+          "file": "floor_detail.ply",
+          "position": [
+            -1.5,
+            0,
+            -0.5
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "setUniformDrawScale": false,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "front_wall_corner_1",
+          "file": "wall.ply",
+          "position": [
+            3,
+            0,
+            -2
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "front_wall_corner_2",
+          "file": "wall.ply",
+          "position": [
+            3,
+            0,
+            2
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "front_wall_opening",
+          "file": "wall_opening.ply",
+          "position": [
+            3,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            90,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "front_wall_block_4",
+          "file": "wall_half.ply",
+          "position": [
+            3,
+            0,
+            -1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            90,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "front_wall_block_3",
+          "file": "wall_half.ply",
+          "position": [
+            3,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            90,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "side_wall_corner_3",
+          "file": "wall.ply",
+          "position": [
+            -3,
+            0,
+            -2
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "side_wall_block_0",
+          "file": "wall_narrow.ply",
+          "position": [
+            -3,
+            0,
+            -2
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            180,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "side_wall_block_1",
+          "file": "wall_narrow.ply",
+          "position": [
+            -2,
+            0,
+            -2
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            180,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "side_wall_block_2",
+          "file": "wall_narrow.ply",
+          "position": [
+            -1,
+            0,
+            -2
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            180,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "side_wall_block_3",
+          "file": "wall_narrow.ply",
+          "position": [
+            0,
+            0,
+            -2
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            180,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "side_wall_block_5",
+          "file": "wall_half.ply",
+          "position": [
+            2,
+            0,
+            -2
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            180,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "block_1",
+          "file": "block.ply",
+          "position": [
+            2,
+            0,
+            -1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "stairs",
+          "file": "stairs.ply",
+          "position": [
+            1,
+            0,
+            -1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            270,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "gate",
+          "file": "gate.ply",
+          "position": [
+            2.7,
+            0.75,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            270,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "wood_structure_1",
+          "file": "wood_structure.ply",
+          "position": [
+            2,
+            0,
+            2
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            180,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "wood_structure_2",
+          "file": "wood_structure.ply",
+          "position": [
+            2,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            180,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "column_1",
+          "file": "column.ply",
+          "position": [
+            -1.7,
+            0,
+            2.2
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "column_2",
+          "file": "column.ply",
+          "position": [
+            -3,
+            0,
+            0.3
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "banner_1",
+          "file": "banner.ply",
+          "position": [
+            0,
+            -0.1,
+            -1.85
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            180,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "banner_2",
+          "file": "banner.ply",
+          "position": [
+            -1,
+            -0.1,
+            -1.85
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            180,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "banner_3",
+          "file": "banner.ply",
+          "position": [
+            -2,
+            -0.1,
+            -1.85
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            180,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "barrel_1",
+          "file": "barrel.ply",
+          "position": [
+            -3,
+            0,
+            1.2
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "barrel_2",
+          "file": "barrel.ply",
+          "position": [
+            -2.4,
+            0,
+            2.2
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "stones",
+          "file": "stones.ply",
+          "position": [
+            -3,
+            0,
+            2
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        },
+        {
+          "name": "chest",
+          "file": "chest.ply",
+          "position": [
+            -2.7,
+            0,
+            1.6
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": [
+            0,
+            160,
+            0
+          ],
+          "setUniformDrawScale": true,
+          "uniformDrawScale": 1
+        }
+      ]
+    }
+  }

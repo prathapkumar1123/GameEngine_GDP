@@ -1,8 +1,9 @@
-#include "Globals/OpenGlCommons.h"
-#include "VAOManager/VAOManager.h"
-#include "ShaderManager/ShaderManager.h"
-#include "GLFW_Callbacks.h"
-#include "Mesh.h"
+#include "Core/OpenGlCommons.h"
+#include "Graphics/VAOManager/VAOManager.h"
+#include "Graphics/ShaderManager/ShaderManager.h"
+#include "Core/GLFW_Callbacks.h"
+#include "Graphics/GameObject/Mesh.h"
+#include "GameEngine/Camera.h"
 
 #include <iostream>
 
@@ -18,9 +19,36 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-glm::vec3 g_cameraEye = glm::vec3(0.0, 0.0, 10.0f);
-glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-glm::vec3 g_upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+float lastX = 0.0f;
+float lastY = 0.0f;
+
+Camera camera;
+
+// Define a callback function for mouse input
+//void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+//    // Calculate the change in mouse position
+//    float xoffset = xpos - lastX;
+//    float yoffset = lastY - ypos;  // Reversed since y-coordinates range from bottom to top
+//
+//    // Update lastX and lastY for the next frame
+//    lastX = xpos;
+//    lastY = ypos;
+//
+//    // Adjust the camera's yaw and pitch based on mouse movement
+//    camera.yaw += xoffset * camera.sensitivity;
+//    camera.pitch += yoffset * camera.sensitivity;
+//
+//    // Limit pitch to avoid flipping the camera
+//    if (camera.pitch > 89.0f) camera.pitch = 89.0f;
+//    if (camera.pitch < -89.0f) camera.pitch = -89.0f;
+//
+//    // Update the camera's front vector
+//    camera.updateCameraVectors();
+//}
+
+glm::vec3 gCameraEye = glm::vec3(0.0, 0.0, 10.0f);
+//glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+//glm::vec3 g_upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 float rot = 0.0f;
 
@@ -30,7 +58,8 @@ std::vector<Mesh*> mMeshesToDraw;
 
 void DrawObject(Mesh* pCurrentMesh, glm::mat4 matModel, GLuint shaderProgramID);
 
-void buildScene();
+void buildScene(std::string sceneFile);
+
 void loadModelsIntoVAO(unsigned int& shaderProgramId);
 
 static void error_callback(int error, const char* description) {
@@ -42,6 +71,7 @@ int main() {
 	std::cout << "Please wait, Starting the scene..." << std::endl;
 
 	GLFWwindow* window;
+    camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 
 	glfwSetErrorCallback(error_callback);
 	
@@ -57,7 +87,11 @@ int main() {
 		exit(EXIT_FAILURE);
 	}
 
+    camera.setGLWindow(window);
     glfwSetKeyCallback(window, key_callback);
+
+    /*glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    glfwSetCursorPosCallback(window, mouse_callback);*/
 
 	glfwMakeContextCurrent(window);
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -84,65 +118,61 @@ int main() {
 	::mMeshManager->setBasePath("assets/models");
 
     loadModelsIntoVAO(shaderProgramID);
-    buildScene();
+    buildScene("scene_1.json");
 
-	/*ModelDrawInfo bannerDrawingInfo;
-	::mMeshManager->loadModelIntoVAO("banner.ply", bannerDrawingInfo, shaderProgramID);
-	std::cout << "Loaded: " << bannerDrawingInfo.NUM_OF_VERTICES << " vertices" << std::endl;
+    double lastTime = glfwGetTime();
 
-    Mesh* pBanner = new Mesh("banner.ply");
-    pBanner->simpleName = "banner";
-    pBanner->setUniformDrawScale(50.0f);
-    pBanner->bDoNotLight = true;
-    pBanner->drawPosition = glm::vec3(0.0f, -30.0f, 0.0f);
+	while (!glfwWindowShouldClose(window)) {
 
-    ::mMeshesToDraw.push_back(pBanner);*/
+        if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) == 0) {
 
-	while (!glfwWindowShouldClose(window))
-	{
+            double currentTime = glfwGetTime();
+            double deltaTime = currentTime - lastTime;
+            camera.processKeyboardInput(deltaTime);
 
-		float ratio;
-		int width, height;
+            float ratio;
+            int width, height;
 
-		glUseProgram(shaderProgramID);
+            glUseProgram(shaderProgramID);
 
-		glfwGetFramebufferSize(window, &width, &height);
-		ratio = width / (float) height;
+            glfwGetFramebufferSize(window, &width, &height);
+            ratio = width / (float)height;
 
-		glViewport(0, 0, width, height);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glViewport(0, 0, width, height);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// While drawing a pixel, see if the pixel that's already there is closer or not?
-		glEnable(GL_DEPTH_TEST);
-		// (Usually) the default - does NOT draw "back facing" triangles
-		glCullFace(GL_BACK);
+            // While drawing a pixel, see if the pixel that's already there is closer or not?
+            glEnable(GL_DEPTH_TEST);
+            // (Usually) the default - does NOT draw "back facing" triangles
+            glCullFace(GL_BACK);
 
-		//uniform vec4 eyeLocation;
-		GLint eyeLocation_UL = glGetUniformLocation(shaderProgramID, "eyeLocation");
-		glUniform4f(eyeLocation_UL, ::g_cameraEye.x, ::g_cameraEye.y, ::g_cameraEye.z, 1.0f);
+            //uniform vec4 eyeLocation;
+            GLint eyeLocation_UL = glGetUniformLocation(shaderProgramID, "eyeLocation");
+            glUniform4f(eyeLocation_UL, ::gCameraEye.x, ::gCameraEye.y, ::gCameraEye.z, 1.0f);
 
-		glm::mat4 matProjection = glm::perspective(0.6f, ratio, 0.1f, 1000.0f);
+            glm::mat4 matProjection = glm::perspective(0.6f, ratio, 0.1f, 1000.0f);
 
-		glm::mat4 matView = glm::lookAt(::g_cameraEye, ::g_cameraTarget, ::g_upVector);
+            glm::mat4 matView = camera.getViewMatrix(); // glm::lookAt(::g_cameraEye, ::g_cameraTarget, ::g_upVector);
 
-		GLint matProjection_UL = glGetUniformLocation(shaderProgramID, "matProjection");
-		glUniformMatrix4fv(matProjection_UL, 1, GL_FALSE, glm::value_ptr(matProjection));
+            GLint matProjection_UL = glGetUniformLocation(shaderProgramID, "matProjection");
+            glUniformMatrix4fv(matProjection_UL, 1, GL_FALSE, glm::value_ptr(matProjection));
 
-		GLint matView_UL = glGetUniformLocation(shaderProgramID, "matView");
-		glUniformMatrix4fv(matView_UL, 1, GL_FALSE, glm::value_ptr(matView));
+            GLint matView_UL = glGetUniformLocation(shaderProgramID, "matView");
+            glUniformMatrix4fv(matView_UL, 1, GL_FALSE, glm::value_ptr(matView));
 
-		for (unsigned int index = 0; index != ::mMeshesToDraw.size(); index++)
-		{
-			Mesh* pCurrentMesh = ::mMeshesToDraw[index];
-			if (pCurrentMesh->bIsVisible)
-			{
-				glm::mat4 matModel = glm::mat4(1.0f);   // Identity matrix
-				DrawObject(pCurrentMesh, matModel, shaderProgramID);
-			}
-		}
+            for (unsigned int index = 0; index != ::mMeshesToDraw.size(); index++)
+            {
+                Mesh* pCurrentMesh = ::mMeshesToDraw[index];
+                if (pCurrentMesh->bIsVisible)
+                {
+                    glm::mat4 matModel = glm::mat4(1.0f);   // Identity matrix
+                    DrawObject(pCurrentMesh, matModel, shaderProgramID);
+                }
+            }
 
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+            glfwSwapBuffers(window);
+            glfwPollEvents();
+        }
 	}
 
 	glfwDestroyWindow(window);

@@ -1,5 +1,5 @@
 #include "ShaderManager.h"
-#include "../Globals/OpenGLCommons.h"
+#include "../Core/OpenGLCommons.h"
 
 #include <fstream>
 #include <sstream>

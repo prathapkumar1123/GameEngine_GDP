@@ -1,6 +1,6 @@
 #include "VAOManager.h"
 
-#include "../Globals/OpenGlCommons.h"
+#include "../Core/OpenGlCommons.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -39,6 +39,10 @@ ModelDrawInfo::ModelDrawInfo()
 void VAOManager::setBasePath(std::string basePathWithoutSlash) {
     this->pBasePath = basePathWithoutSlash;
     return;
+}
+
+std::string VAOManager::getBasePath() {
+    return pBasePath;
 }
 
 bool VAOManager::updateVAOBuffers(

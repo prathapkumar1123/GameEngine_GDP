@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{d204247e-48fd-4ee4-accf-cef11e30de01}</ProjectGuid>
+    <ProjectGuid>{AD064048-3C27-41D1-97C6-905F775A899D}</ProjectGuid>
     <RootNamespace>GraphicsScene</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Extern\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Extern\include;$(SolutionDir)$(Platform)\$(Configuration);$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Extern\lib\Debug_x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,26 +141,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameEngine\Camera.cpp" />
+    <ClCompile Include="GameEngine\InputHandling.cpp" />
+    <ClCompile Include="GameEngine\LoadScene.cpp" />
     <ClCompile Include="Globals\glad.c" />
-    <ClCompile Include="InputHandling.cpp" />
-    <ClCompile Include="LoadScene.cpp" />
+    <ClCompile Include="Graphics\GameObject\Mesh.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ShaderManager\ShaderManager.cpp" />
     <ClCompile Include="VAOManager\VAOManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GLFW_Callbacks.h" />
-    <ClInclude Include="Globals\OpenGlCommons.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="ShaderManager\ShaderManager.h" />
-    <ClInclude Include="VAOManager.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\fragment_shader.glsl" />
-    <None Include="shaders\vertex_shader.glsl" />
+    <None Include="assets\shaders\fragment_shader.glsl" />
+    <None Include="assets\shaders\vertex_shader.glsl" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets" Condition="Exists('..\packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\nlohmann.json.3.11.2\build\native\nlohmann.json.targets'))" />
+  </Target>
 </Project>

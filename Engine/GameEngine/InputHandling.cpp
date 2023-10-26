@@ -1,4 +1,5 @@
 #include "Globals/OpenGlCommons.h"
+#include "Camera.h"
 
 #include <string>
 #include <iostream>
@@ -9,7 +10,8 @@
 extern int g_selectedMesh;
 extern std::vector<Mesh*> g_vec_pMeshesToDraw;
 
-extern glm::vec3 g_cameraEye;
+extern glm::vec3 gCameraEye;
+
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -43,30 +45,30 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
         if (key == GLFW_KEY_A && action)
         {
-            ::g_cameraEye.x -= CAMERA_MOVEMENT_SPEED;
+            ::gCameraEye.x -= CAMERA_MOVEMENT_SPEED;
         }
         if (key == GLFW_KEY_D && action)
         {
-            ::g_cameraEye.x += CAMERA_MOVEMENT_SPEED;
+            ::gCameraEye.x += CAMERA_MOVEMENT_SPEED;
         }
 
         if (key == GLFW_KEY_W && action)
         {
-            ::g_cameraEye.z += CAMERA_MOVEMENT_SPEED;
+            ::gCameraEye.z += CAMERA_MOVEMENT_SPEED;
         }
         if (key == GLFW_KEY_S && action)
         {
-            ::g_cameraEye.z -= CAMERA_MOVEMENT_SPEED;
+            ::gCameraEye.z -= CAMERA_MOVEMENT_SPEED;
         }
 
 
         if (key == GLFW_KEY_Q && action)
         {
-            ::g_cameraEye.y -= CAMERA_MOVEMENT_SPEED;
+            ::gCameraEye.y -= CAMERA_MOVEMENT_SPEED;
         }
         if (key == GLFW_KEY_E && action)
         {
-            ::g_cameraEye.y += CAMERA_MOVEMENT_SPEED;
+            ::gCameraEye.y += CAMERA_MOVEMENT_SPEED;
         }
 
     }// if ( ( mods & GLFW_MOD_SHIFT ) == GLFW_MOD_SHIFT )

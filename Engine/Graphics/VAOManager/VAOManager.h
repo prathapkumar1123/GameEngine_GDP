@@ -46,6 +46,8 @@ public:
 
 	void setBasePath(std::string basePathWithoutSlash);
 
+	std::string getBasePath();
+
 	bool updateVAOBuffers(
 		std::string fileName,
 		ModelDrawInfo& updatedDrawInfo,

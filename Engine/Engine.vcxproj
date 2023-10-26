@@ -141,19 +141,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\glad.c" />
     <ClCompile Include="GameEngine\Camera.cpp" />
     <ClCompile Include="GameEngine\InputHandling.cpp" />
     <ClCompile Include="GameEngine\LoadScene.cpp" />
-    <ClCompile Include="Globals\glad.c" />
     <ClCompile Include="Graphics\GameObject\Mesh.cpp" />
+    <ClCompile Include="Graphics\ShaderManager\ShaderManager.cpp" />
+    <ClCompile Include="Graphics\VAOManager\VAOManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="ShaderManager\ShaderManager.cpp" />
-    <ClCompile Include="VAOManager\VAOManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragment_shader.glsl" />
     <None Include="assets\shaders\vertex_shader.glsl" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Core\GLFW_Callbacks.h" />
+    <ClInclude Include="Core\OpenGlCommons.h" />
+    <ClInclude Include="GameEngine\Camera.h" />
+    <ClInclude Include="Graphics\GameObject\Mesh.h" />
+    <ClInclude Include="Graphics\ShaderManager\ShaderManager.h" />
+    <ClInclude Include="Graphics\VAOManager\VAOManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

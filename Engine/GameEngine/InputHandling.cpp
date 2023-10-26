@@ -1,10 +1,10 @@
-#include "Globals/OpenGlCommons.h"
+#include "../Core/OpenGlCommons.h"
+#include "../Graphics/GameObject/Mesh.h"
 #include "Camera.h"
 
 #include <string>
 #include <iostream>
 #include <vector>
-#include "Mesh.h"
 
 
 extern int g_selectedMesh;
@@ -71,9 +71,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             ::gCameraEye.y += CAMERA_MOVEMENT_SPEED;
         }
 
-    }// if ( ( mods & GLFW_MOD_SHIFT ) == GLFW_MOD_SHIFT )
-
-
+    }
 
     return;
 }

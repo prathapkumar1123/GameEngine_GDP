@@ -1,5 +1,5 @@
-#include "Mesh.h"
-#include "VAOManager/VAOManager.h"
+#include "../Graphics/GameObject/Mesh.h"
+#include "../Graphics/VAOManager/VAOManager.h"
 
 #include <filesystem>
 #include <iostream>

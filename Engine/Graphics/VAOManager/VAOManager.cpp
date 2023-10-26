@@ -1,6 +1,6 @@
 #include "VAOManager.h"
 
-#include "../Core/OpenGlCommons.h"
+#include "../../Core/OpenGlCommons.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>

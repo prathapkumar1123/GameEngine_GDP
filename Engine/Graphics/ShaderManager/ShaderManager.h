@@ -8,25 +8,32 @@ enum eShaderType { VERTEX_SHADER, FRAGMENT_SHADER, UNKNOWN };
 
 class Shader {
 public:
-	Shader();
+	Shader(std::string fileName);
 	~Shader();
+	
+	unsigned int id;
 
 	eShaderType shaderType;
 	std::string getShaderTypeString(void);
 
-	unsigned int id;
+	std::string getShaderFileName();
+
+	void setShaderFileName(std::string fileName);
 
 	std::vector<std::string> vecSource;
+
+private:
 	std::string fileName;
 };
 
 class ShaderProgram {
 public:
-	ShaderProgram() : ID(0) {};
+	ShaderProgram() : id(0) {};
 	~ShaderProgram() {};
 
-	unsigned int ID;
+	unsigned int id;
 
+	std::string fileName;
 	std::string shaderProgramName;
 	std::map< std::string, int> mapUniformNameToLocation;
 
@@ -57,9 +64,12 @@ public:
 	std::string getLastError(void);
 
 private:
+
+	const std::string defaultShadersPath = "assets/shaders";
+
 	// Returns an empty string if it didn't work
 	bool pLoadSourceFromFile(Shader& shader);
-	std::string pbasePath;
+	std::string pbasePath = "assets/shaders";
 
 	bool pCompileShaderFromSource(Shader& shader, std::string& error);
 

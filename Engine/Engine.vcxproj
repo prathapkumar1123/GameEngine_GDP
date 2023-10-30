@@ -143,9 +143,13 @@
   <ItemGroup>
     <ClCompile Include="Core\glad.c" />
     <ClCompile Include="GameEngine\Camera.cpp" />
+    <ClCompile Include="GameEngine\GameEngine.cpp" />
+    <ClCompile Include="GameEngine\GLRenderer.cpp" />
     <ClCompile Include="GameEngine\InputHandling.cpp" />
-    <ClCompile Include="GameEngine\LoadScene.cpp" />
-    <ClCompile Include="Graphics\GameObject\Mesh.cpp" />
+    <ClCompile Include="GameEngine\Scene.cpp" />
+    <ClCompile Include="Graphics\GameObject\GameObject.cpp" />
+    <ClCompile Include="Graphics\LightsManager\LightHelper.cpp" />
+    <ClCompile Include="Graphics\LightsManager\LightManager.cpp" />
     <ClCompile Include="Graphics\ShaderManager\ShaderManager.cpp" />
     <ClCompile Include="Graphics\VAOManager\VAOManager.cpp" />
     <ClCompile Include="main.cpp" />
@@ -157,9 +161,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\GLFW_Callbacks.h" />
+    <ClInclude Include="Core\Globals.h" />
     <ClInclude Include="Core\OpenGlCommons.h" />
     <ClInclude Include="GameEngine\Camera.h" />
-    <ClInclude Include="Graphics\GameObject\Mesh.h" />
+    <ClInclude Include="GameEngine\GameEngine.h" />
+    <ClInclude Include="GameEngine\GLRenderer.h" />
+    <ClInclude Include="GameEngine\Scene.h" />
+    <ClInclude Include="GLRenderer.h" />
+    <ClInclude Include="Graphics\GameObject\GameObject.h" />
+    <ClInclude Include="Graphics\LightsManager\LightHelper.h" />
+    <ClInclude Include="Graphics\LightsManager\LightManager.h" />
     <ClInclude Include="Graphics\ShaderManager\ShaderManager.h" />
     <ClInclude Include="Graphics\VAOManager\VAOManager.h" />
   </ItemGroup>

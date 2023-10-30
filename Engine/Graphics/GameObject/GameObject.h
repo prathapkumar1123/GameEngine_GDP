@@ -6,11 +6,11 @@
 #include <string>
 #include <vector>
 
-class Mesh {
+class GameObject {
 
 public:
-	Mesh(const std::string& meshName);
-	~Mesh();
+	GameObject(const std::string& meshName);
+	~GameObject();
 
 	std::string simpleName;
 
@@ -18,6 +18,10 @@ public:
 	glm::vec3 drawScale;
 
 	std::string getMeshName();
+
+	void setRotation(glm::vec3 rotation) {
+		this->rotation = rotation;
+	}
 
 	void setRotationFromEuler(glm::vec3 newEulerAngleXYZ) {
 		this->m_qOrientation = glm::quat(newEulerAngleXYZ);
@@ -32,12 +36,15 @@ public:
 		return this->m_qOrientation;
 	}
 
-	void setUniformDrawScale(float scale);
+	glm::vec3 getRotation() {
+		return rotation;
+	}
 
-	// STARTOF: From: iPhysicsMeshTransformAccess interface
+	void setUniformDrawScale(float scale);
 
 	glm::vec3 getDrawPosition(void);
 	glm::vec3 getDrawOrientation(void);
+
 	void setDrawPosition(const glm::vec3& newPosition);
 	void setDrawOrientation(const glm::vec3& newOrientation);
 	void setDrawOrientation(const glm::quat& newOrientation);
@@ -51,17 +58,18 @@ public:
 
 	glm::vec4 wholeObjectDebugColourRGBA;
 
-	std::vector<Mesh*> vec_pChildMeshes;
+	std::vector<GameObject*> vec_pChildMeshes;
 
 	unsigned int getUniqueID(void);
 
 private:
 	std::string meshName;
 
+	glm::vec3 rotation;
 	glm::quat m_qOrientation;
 
-	unsigned int m_UniqueID;
-	static const unsigned int FIRST_UNIQUE_ID = 1000;
-	static unsigned int m_nextUniqueID;
+	unsigned int mUniqueID;
+	static unsigned int mNextUniqueID;
 
+	static const unsigned int FIRST_UNIQUE_ID = 1000;
 };

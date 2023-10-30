@@ -40,11 +40,15 @@ class VAOManager
 {
 public:
 
+	VAOManager();
+
+	~VAOManager();
+
 	bool loadModelIntoVAO(std::string fileName, ModelDrawInfo& drawInfo, unsigned int shaderProgramID);
 
 	bool findDrawInfoByModelName(std::string filename, ModelDrawInfo& drawInfo);
 
-	void setBasePath(std::string basePathWithoutSlash);
+	void setBasePath(std::string basePath);
 
 	std::string getBasePath();
 

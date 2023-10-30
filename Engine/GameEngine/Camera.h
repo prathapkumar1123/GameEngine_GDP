@@ -6,12 +6,17 @@
 #include "../Core/OpenGlCommons.h"
 
 class Camera {
-
 public:
-    Camera();
-    ~Camera();
+    static Camera& getInstance() {
+        static Camera instance;
+        return instance;
+    }
 
-    Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch);
+    // Delete the copy constructor and assignment operator to prevent duplication
+    Camera(const Camera&) = delete;
+    void operator=(const Camera&) = delete;
+
+    ~Camera();
 
     glm::mat4 getViewMatrix();
 
@@ -21,19 +26,25 @@ public:
 
     void updateViewMatrix();
 
-    void updateCameraVectors();
+    glm::vec3 gCameraEye;
 
-    float yaw;
-    float pitch;
-    float movementSpeed;
-    float sensitivity;
-
-private:
     glm::vec3 position;
+
     glm::vec3 front;
     glm::vec3 up;
     glm::vec3 right;
     glm::vec3 worldUp;
+
+    float yaw;
+    float pitch;
+
+private:
+    Camera();
+
+    void updateCameraVectors();
+
+    float movementSpeed = 0.01f;
+    float sensitivity = 1.5f;
 
     GLFWwindow* window;
 };

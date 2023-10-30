@@ -1,10 +1,12 @@
 #include "VAOManager.h"
 
 #include "../../Core/OpenGlCommons.h"
+#include "../../Core/Globals.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
-
+#include <iostream>
+#include <windows.h>
 #include <vector>
 #include <sstream>
 #include <fstream>
@@ -36,6 +38,12 @@ ModelDrawInfo::ModelDrawInfo()
     return;
 }
 
+VAOManager::VAOManager() {}
+
+VAOManager::~VAOManager() {
+    
+}
+
 void VAOManager::setBasePath(std::string basePathWithoutSlash) {
     this->pBasePath = basePathWithoutSlash;
     return;
@@ -48,7 +56,7 @@ std::string VAOManager::getBasePath() {
 bool VAOManager::updateVAOBuffers(
     std::string fileName,
     ModelDrawInfo& updatedDrawInfo,
-    unsigned int shaderProgramID
+    unsigned int shaderProgramI
 ) {
     // This exists? 
     ModelDrawInfo updatedDrawInfo_TEMP;
@@ -153,25 +161,42 @@ bool VAOManager::findDrawInfoByModelName(
     std::string filename,
     ModelDrawInfo& drawInfo
 ) {
-    std::map<std::string, ModelDrawInfo>::iterator itDrawInfo = this->pModelInfoMapByName.find(filename);
+    try {
+        std::map<std::string, ModelDrawInfo>::iterator itDrawInfo = this->pModelInfoMapByName.find(filename);
 
-    // Search for the ModelDrawInfo
-    if (itDrawInfo == this->pModelInfoMapByName.end()) {
+        // Search for the ModelDrawInfo
+        if (itDrawInfo == this->pModelInfoMapByName.end()) {
+            return false;
+        }
+
+        // Found the ModelDrawInfo
+        drawInfo = itDrawInfo->second;
+        return true;
+    }
+    catch (const std::exception& e) {
         return false;
     }
-
-    // Found the ModelDrawInfo
-    drawInfo = itDrawInfo->second;
-    return true;
 }
 
 bool VAOManager::loadPlyFile_XYZ_N_RGBA(
     std::string fileName,
     ModelDrawInfo& mDrawInfo
 ) {
+    wchar_t buffer[MAX_PATH];
+    std::wstring path;
+    if (_wgetcwd(buffer, MAX_PATH) != nullptr) {
+        path = buffer + std::wstring(pBasePath.begin(), pBasePath.end());
+    }
+
+    std::cout << pBasePath + "/" + fileName.c_str() << std::endl;
 
     std::ifstream modelFile(pBasePath + "/" + fileName.c_str());
+
+    std::cout << modelFile.tellg() << std::endl;
+
     if (!modelFile.is_open()) {
+        std::cout << modelFile.tellg() << std::endl;
+
         return false;
     }
 

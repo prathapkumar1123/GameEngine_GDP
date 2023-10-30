@@ -1,10 +1,10 @@
-#include "Mesh.h"
+#include "GameObject.h"
 
 #include <iostream>
 
-unsigned int Mesh::m_nextUniqueID = Mesh::FIRST_UNIQUE_ID;
+unsigned int GameObject::mNextUniqueID = GameObject::FIRST_UNIQUE_ID;
 
-Mesh::Mesh(const std::string& meshName) {
+GameObject::GameObject(const std::string& meshName) {
 	this->meshName = meshName;
 
 	this->drawPosition = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -13,51 +13,49 @@ Mesh::Mesh(const std::string& meshName) {
 
 	this->bIsWireframe = false;
 	this->bDoNotLight = false;
-
 	this->bIsVisible = true;
-
 	this->bUseDebugColours = false;
 	this->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Set uniqueID
-	this->m_UniqueID = m_nextUniqueID;
-	m_nextUniqueID++;
+	this->mUniqueID = mNextUniqueID;
+	mNextUniqueID++;
 }
 
-Mesh::~Mesh() {}
+GameObject::~GameObject() {}
 
-std::string Mesh::getMeshName() {
+std::string GameObject::getMeshName() {
 	return meshName;
 }
 
-unsigned int Mesh::getUniqueID(void) {
-	return this->m_UniqueID;
+unsigned int GameObject::getUniqueID(void) {
+	return this->mUniqueID;
 }
 
-void Mesh::setUniformDrawScale(float scale) {
+void GameObject::setUniformDrawScale(float scale) {
 	this->drawScale.x = this->drawScale.y = this->drawScale.z = scale;
 	return;
 }
 
-glm::vec3 Mesh::getDrawPosition(void) {
+glm::vec3 GameObject::getDrawPosition(void) {
 	return this->drawPosition;
 }
 
-void Mesh::setDrawPosition(const glm::vec3& newPosition) {
+void GameObject::setDrawPosition(const glm::vec3& newPosition) {
 	this->drawPosition = newPosition;
 	return;
 }
 
-glm::vec3 Mesh::getDrawOrientation(void) {
+glm::vec3 GameObject::getDrawOrientation(void) {
 	return glm::eulerAngles(this->get_qOrientation());
 }
 
-void Mesh::setDrawOrientation(const glm::vec3& newOrientation) {
+void GameObject::setDrawOrientation(const glm::vec3& newOrientation) {
 	this->setRotationFromEuler(newOrientation);
 	return;
 }
 
-void Mesh::setDrawOrientation(const glm::quat& newOrientation) {
+void GameObject::setDrawOrientation(const glm::quat& newOrientation) {
 	this->m_qOrientation = newOrientation;
 	return;
 }

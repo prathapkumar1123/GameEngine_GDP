@@ -8,19 +8,18 @@
 #include <algorithm>
 #include <iterator>
 
-const unsigned int MAXLINELENGTH = 4 * 1024;
+const unsigned int MAXLINELENGTH = 8 * 1024;
 
 /// <summary>
 /// Shader Implementation
 /// </summary>
-Shader::Shader() {
-	this->id = 0;
+Shader::Shader(std::string fileName) {
+	//this->id = 0;
+	this->fileName = fileName;
 	this->shaderType = eShaderType::UNKNOWN;
-	return;
 }
 
 Shader::~Shader() {
-	return;
 }
 
 std::string Shader::getShaderTypeString(void) {
@@ -40,13 +39,20 @@ std::string Shader::getShaderTypeString(void) {
 	return "UNKNOWN_SHADER_TYPE";
 }
 
+void Shader::setShaderFileName(std::string fileName) {
+	this->fileName = fileName;
+}
+
+std::string Shader::getShaderFileName() {
+	return this->fileName;
+}
 
 /// <summary>
 /// Shader Program Implementation
 /// </summary>
 bool ShaderProgram::loadUniformLocation(std::string variableName) {
 
-	GLint uniLocation = glGetUniformLocation(this->ID, variableName.c_str());
+	GLint uniLocation = glGetUniformLocation(this->id, variableName.c_str());
 
 	if (uniLocation == -1) {
 		return false;
@@ -129,15 +135,15 @@ bool ShaderManager::createProgramFromFile(std::string shaderName, Shader& vShade
 	}
 
 	ShaderProgram curProgram;
-	curProgram.ID = glCreateProgram();
+	curProgram.id = glCreateProgram();
 
-	glAttachShader(curProgram.ID, vShader.id);
-	glAttachShader(curProgram.ID, fShader.id);
-	glLinkProgram(curProgram.ID);
+	glAttachShader(curProgram.id, vShader.id);
+	glAttachShader(curProgram.id, fShader.id);
+	glLinkProgram(curProgram.id);
 
 	// Was there a link error? 
 	errorText = "";
-	if (this->pWasThereALinkError(curProgram.ID, errorText)) {
+	if (this->pWasThereALinkError(curProgram.id, errorText)) {
 		std::stringstream ssError;
 		ssError << "Shader program link error: ";
 		ssError << errorText;
@@ -149,10 +155,10 @@ bool ShaderManager::createProgramFromFile(std::string shaderName, Shader& vShade
 	curProgram.shaderProgramName = shaderName;
 
 	// Add the shader to the map
-	this->mapShaderProgramToID[curProgram.ID] = curProgram;
+	this->mapShaderProgramToID[curProgram.id] = curProgram;
 
 	// Save to other map, too
-	this->mapNameToID[curProgram.shaderProgramName] = curProgram.ID;
+	this->mapNameToID[curProgram.shaderProgramName] = curProgram.id;
 
 	return true;
 }
@@ -199,7 +205,7 @@ std::string ShaderManager::getLastError(void)
 
 bool ShaderManager::pLoadSourceFromFile(Shader& shader)
 {
-	std::string fullFileName = this->pbasePath + "/" + shader.fileName;
+	std::string fullFileName = this->pbasePath + "/" + shader.getShaderFileName();
 
 	std::ifstream theFile(fullFileName.c_str());
 	if (!theFile.is_open()) {

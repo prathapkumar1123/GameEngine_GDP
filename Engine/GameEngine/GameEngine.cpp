@@ -12,7 +12,7 @@ public:
     bool isGameLoopRunning = true;
     double lastTime;
 
-    Scene* currentScene;
+    BaseScene* currentScene;
 
     std::string modelsBasePath = "/assets/models";
     std::string shadersBasePath = "assets/shaders";
@@ -59,7 +59,6 @@ void GameEngine::GameEngineImpl::loadAllModels() {
 void GameEngine::GameEngineImpl::loadModelIntoVAO(std::string modelName) {
     ModelDrawInfo modeInfo;
     glRenderer->mGameObjectManager->loadModelIntoVAO(modelName, modeInfo, glRenderer->getShaderProgramId());
-    std::cout << "Loaded: " << modeInfo.NUM_OF_VERTICES << " vertices" << std::endl;
 }
 
 
@@ -86,12 +85,20 @@ void GameEngine::release() {
     delete impl;
 }
 
+void GameEngine::setFPSRate(FPS_RATE fpsRate) {
+    impl->glRenderer->setFPSRate(fpsRate);
+}
+
 GLRenderer* GameEngine::getRenderer() {
     return impl->glRenderer;
 }
 
 int GameEngine::getShaderProgramId() {
     return impl->glRenderer->getShaderProgramId();
+}
+
+VAOManager* GameEngine::getVAOManager() {
+    return impl->glRenderer->mGameObjectManager;
 }
 
 void GameEngine::runGameLoop() {
@@ -119,7 +126,7 @@ void GameEngine::registerRenderFunction(std::function<void()> renderFunc) {
     impl->renderFunctions.push_back(renderFunc);
 }
 
-Scene* GameEngine::getCurrentScene() {
+BaseScene* GameEngine::getCurrentScene() {
     return this->impl->currentScene;
 }
 
@@ -127,9 +134,10 @@ GLFWwindow* GameEngine::getWindow() {
     return impl->glRenderer->getWindow();
 }
 
-void GameEngine::setCurrentScene(Scene* scene) {
+void GameEngine::setCurrentScene(BaseScene* scene) {
     impl->glRenderer->setCurrentScene(scene);
     impl->currentScene = scene;
+    scene->setVAOManager(getVAOManager());
 }
 
 void GameEngine::setAssetsPath(std::string modelsBasePath, std::string shadersBasePath, std::string scenesBasePath) {

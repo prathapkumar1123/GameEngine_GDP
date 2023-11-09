@@ -141,18 +141,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameEngine\BaseScene.cpp" />
+    <ClCompile Include="Game\Ball.cpp" />
     <ClCompile Include="Core\glad.c" />
     <ClCompile Include="GameEngine\Camera.cpp" />
     <ClCompile Include="GameEngine\GameEngine.cpp" />
     <ClCompile Include="GameEngine\GLRenderer.cpp" />
     <ClCompile Include="GameEngine\InputHandling.cpp" />
-    <ClCompile Include="GameEngine\Scene.cpp" />
+    <ClCompile Include="Game\SceneLevel1.cpp" />
     <ClCompile Include="Graphics\GameObject\GameObject.cpp" />
     <ClCompile Include="Graphics\LightsManager\LightHelper.cpp" />
     <ClCompile Include="Graphics\LightsManager\LightManager.cpp" />
     <ClCompile Include="Graphics\ShaderManager\ShaderManager.cpp" />
     <ClCompile Include="Graphics\VAOManager\VAOManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Physics\cPhysics_BasicTests.cpp" />
+    <ClCompile Include="Physics\cPhysics_IntersectionTests.cpp" />
+    <ClCompile Include="Physics\PhysicsEngine.cpp" />
+    <ClCompile Include="Physics\QuadMap.cpp" />
+    <ClCompile Include="Physics\sPhysicsProperties.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragment_shader.glsl" />
@@ -160,19 +167,26 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameEngine\BaseScene.h" />
+    <ClInclude Include="Game\Ball.h" />
     <ClInclude Include="Core\GLFW_Callbacks.h" />
     <ClInclude Include="Core\Globals.h" />
     <ClInclude Include="Core\OpenGlCommons.h" />
     <ClInclude Include="GameEngine\Camera.h" />
     <ClInclude Include="GameEngine\GameEngine.h" />
     <ClInclude Include="GameEngine\GLRenderer.h" />
-    <ClInclude Include="GameEngine\Scene.h" />
-    <ClInclude Include="GLRenderer.h" />
+    <ClInclude Include="Game\SceneLevel1.h" />
+    <ClInclude Include="Graphics\GameObject\eMesh.h" />
     <ClInclude Include="Graphics\GameObject\GameObject.h" />
     <ClInclude Include="Graphics\LightsManager\LightHelper.h" />
     <ClInclude Include="Graphics\LightsManager\LightManager.h" />
     <ClInclude Include="Graphics\ShaderManager\ShaderManager.h" />
     <ClInclude Include="Graphics\VAOManager\VAOManager.h" />
+    <ClInclude Include="Physics\OctaMap.h" />
+    <ClInclude Include="Physics\PhysicsEngine.h" />
+    <ClInclude Include="Physics\iPhysicsMesh.h" />
+    <ClInclude Include="Physics\QuadMap.h" />
+    <ClInclude Include="Physics\sPhysicsProperties.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

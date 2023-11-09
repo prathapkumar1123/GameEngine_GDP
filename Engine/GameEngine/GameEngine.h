@@ -2,12 +2,13 @@
 
 #include "GLRenderer.h"
 #include "Camera.h"
-#include "Scene.h"
+#include "BaseScene.h"
 
 #include <functional>
 
 class GameEngine {
 public:
+
 	GameEngine();
 	~GameEngine();
 
@@ -26,11 +27,15 @@ public:
 
 	void setAssetsPath(std::string modelsBasePath, std::string shadersBasePath, std::string scenesBasePath);
 
-	void setCurrentScene(Scene* scene);
+	void setCurrentScene(BaseScene* scene);
 
-	Scene* getCurrentScene();
-
+	BaseScene* getCurrentScene();
+	 
 	GLRenderer* getRenderer();
+
+	VAOManager* getVAOManager();
+
+	void setFPSRate(FPS_RATE fpsRate);
 
 	// Register functions for different game systems (e.g., physics, input, rendering).
 	void registerUpdateFunction(std::function<void(float)> updateFunc);

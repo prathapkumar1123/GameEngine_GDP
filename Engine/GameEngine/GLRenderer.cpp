@@ -1,5 +1,8 @@
 #include "GLRenderer.h"
+
 #include "../Core/Globals.h"
+#include "../Physics/PhysicsEngine.h"
+#include "../GameEngine/BaseScene.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -20,6 +23,8 @@
 GLRenderer::GLRenderer() {
     mGameObjectManager = new VAOManager();
     mGameObjectManager->setBasePath(modelsBasePath);
+
+    PhysicsEngine::getInstance().setVAOManager(mGameObjectManager);
 
     shaderManager = new ShaderManager();
 
@@ -42,7 +47,7 @@ void GLRenderer::setfragmentShader(std::string name) {
 	fragmentShader.setShaderFileName(name);
 }
 
-void GLRenderer::setCurrentScene(Scene* currentScene) {
+void GLRenderer::setCurrentScene(BaseScene* currentScene) {
     std::cout << "Current Scene Setting..." << std::endl;
     this->currentScene = currentScene;
 
@@ -71,6 +76,10 @@ void GLRenderer::setWindowTitle(std::string title) {
 
 void GLRenderer::setShadersBasePath(std::string basePath) {
     this->shaderBasePath = basePath;
+}
+
+void GLRenderer::setFPSRate(FPS_RATE fpsRate) {
+    this->CURRENNT_FPS_RATE = fpsRate;
 }
 
 void GLRenderer::initOpenGL() {
@@ -103,72 +112,84 @@ void GLRenderer::initOpenGL() {
 }
 
 void GLRenderer::run(double deltaTime) {
-    if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) == 0) {
 
-        // getCamera()->processKeyboardInput(deltaTime);
-        currentScene->processKeyboardInput(deltaTime);
-        currentScene->updateScene();
+    if (deltaTime > (lastDeltaTime + (CURRENNT_FPS_RATE / 30.0f * 0.015))) {
 
-        float ratio;
-        int width, height;
-        glUseProgram(shaderProgramId);
+        if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) == 0) {
 
-        glfwGetFramebufferSize(window, &width, &height);
-        ratio = width / (float)height;
+            //std::cout << count << ": " << deltaTime << std::endl;
+            //count++;
 
-        glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            // getCamera()->processKeyboardInput(deltaTime);
+            currentScene->processKeyboardInput(deltaTime);
+            currentScene->updateScene(deltaTime);
 
-        glEnable(GL_DEPTH_TEST);
-        glCullFace(GL_BACK);
+            float ratio;
+            int width, height;
+            glUseProgram(shaderProgramId);
 
-        //uniform vec4 eyeLocation;
-        GLint eyeLocation_UL = glGetUniformLocation(shaderProgramId, "eyeLocation");
-        glUniform4f(eyeLocation_UL,
-            getCamera().gCameraEye.x,
-            getCamera().gCameraEye.y,
-            getCamera().gCameraEye.z,
-            1.0f
-        );
+            glfwGetFramebufferSize(window, &width, &height);
+            ratio = width / (float)height;
 
-        glm::mat4 matProjection = glm::perspective(0.6f, ratio, 0.1f, 1000.0f);
-        glm::mat4 matView = getCamera().getViewMatrix();
+            glViewport(0, 0, width, height);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        GLint matProjection_UL = glGetUniformLocation(shaderProgramId, "matProjection");
-        glUniformMatrix4fv(matProjection_UL, 1, GL_FALSE, glm::value_ptr(matProjection));
+            glEnable(GL_DEPTH_TEST);
+            glCullFace(GL_BACK);
 
-        GLint matView_UL = glGetUniformLocation(shaderProgramId, "matView");
-        glUniformMatrix4fv(matView_UL, 1, GL_FALSE, glm::value_ptr(matView));
+            //uniform vec4 eyeLocation;
+            GLint eyeLocation_UL = glGetUniformLocation(shaderProgramId, "eyeLocation");
+            glUniform4f(eyeLocation_UL,
+                getCamera().gCameraEye.x,
+                getCamera().gCameraEye.y,
+                getCamera().gCameraEye.z,
+                1.0f
+            );
 
-        if (currentScene != nullptr) {
-            for (unsigned int index = 0; index != currentScene->getObjectsToDraw().size(); index++) {
-                GameObject* mCurrentObj = currentScene->getObjectsToDraw()[index];
-                if (mCurrentObj->bIsVisible) {
-                    glm::mat4 matModel = glm::mat4(1.0f);
-                    drawObject(mCurrentObj, matModel);
+            glm::mat4 matProjection = glm::perspective(0.6f, ratio, 0.1f, 1000.0f);
+            glm::mat4 matView = getCamera().getViewMatrix();
+
+            GLint matProjection_UL = glGetUniformLocation(shaderProgramId, "matProjection");
+            glUniformMatrix4fv(matProjection_UL, 1, GL_FALSE, glm::value_ptr(matProjection));
+
+            GLint matView_UL = glGetUniformLocation(shaderProgramId, "matView");
+            glUniformMatrix4fv(matView_UL, 1, GL_FALSE, glm::value_ptr(matView));
+
+            if (currentScene != nullptr) {
+                for (unsigned int index = 0; index != currentScene->getObjectsToDraw().size(); index++) {
+                    GameObject* mCurrentObj = currentScene->mObjectsToDraw[index];
+                    if (mCurrentObj->bIsVisible) {
+                        glm::mat4 matModel = glm::mat4(1.0f);
+                        drawObject(mCurrentObj, matModel);
+                    }
                 }
             }
+
+            PhysicsEngine::getInstance().updatePhysics(deltaTime);
+
+            glfwSwapBuffers(window);
+            glfwPollEvents();
+
+            std::stringstream ssTitle;
+            ssTitle << windowTitle << " -- "
+                << "Camera (x,y,z): "
+                << getCamera().gCameraEye.x << ", "
+                << getCamera().gCameraEye.y << ", "
+                << getCamera().gCameraEye.z << "), "
+                << getCamera().position.x << ", "
+                << getCamera().position.y << ", "
+                << getCamera().position.z << ", Pitch: "
+                << getCamera().pitch << ", Yaw: "
+                << getCamera().yaw << "";
+
+            std::string theTitle = ssTitle.str();
+
+            glfwSetWindowTitle(window, theTitle.c_str());
         }
 
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-
-        std::stringstream ssTitle;
-        ssTitle << windowTitle << " -- "
-            << "Camera (x,y,z): "
-            << getCamera().gCameraEye.x << ", "
-            << getCamera().gCameraEye.y << ", "
-            << getCamera().gCameraEye.z << "), "
-            << getCamera().position.x << ", "
-            << getCamera().position.y << ", "
-            << getCamera().position.z << ", Pitch: "
-            << getCamera().pitch << ", Yaw: "
-            << getCamera().yaw << "";
-
-        std::string theTitle = ssTitle.str();
-
-        glfwSetWindowTitle(window, theTitle.c_str());
+        lastDeltaTime = deltaTime;
     }
+
 }
 
 void GLRenderer::drawObject(GameObject* mCurrentObj, glm::mat4 matModelParent) {
@@ -181,7 +202,7 @@ void GLRenderer::drawObject(GameObject* mCurrentObj, glm::mat4 matModelParent) {
             mCurrentObj->drawPosition.z));
 
     // Now we are all bougie, using quaternions
-    glm::mat4 matRotation = glm::mat4(mCurrentObj->get_qOrientation());
+    glm::mat4 matRotation = glm::mat4(mCurrentObj->getQuatOrientation());
 
     // Scaling matrix
     glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
@@ -233,7 +254,7 @@ void GLRenderer::drawObject(GameObject* mCurrentObj, glm::mat4 matModelParent) {
     }
 
     ModelDrawInfo modelInfo;
-    if (mGameObjectManager->findDrawInfoByModelName(mCurrentObj->getMeshName(), modelInfo)) {
+    if (mGameObjectManager->findDrawInfoByModelName(mCurrentObj->getFileName(), modelInfo)) {
         glBindVertexArray(modelInfo.VAO_ID);
         glDrawElements(GL_TRIANGLES,
             modelInfo.NUM_OF_INDICES,
@@ -251,7 +272,7 @@ void GLRenderer::drawObject(GameObject* mCurrentObj, glm::mat4 matModelParent) {
 
     matModel = matModel * matRemoveScaling;
 
-    for (GameObject* pChild : mCurrentObj->vec_pChildMeshes) {
+    for (GameObject* pChild : mCurrentObj->vecChildMeshes) {
         drawObject(pChild, matModel);
     }
 

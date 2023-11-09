@@ -4,7 +4,8 @@
 #include "Core/GLFW_Callbacks.h"
 #include "GameEngine/Camera.h"
 #include "GameEngine/GameEngine.h"
-#include "GameEngine/Scene.h"
+#include "GameEngine/BaseScene.h"
+#include "Game/SceneLevel1.h"
 
 #include <iostream>
 
@@ -46,17 +47,22 @@
 
 int main() {
 	std::cout << "Please wait, Starting the scene..." << std::endl;
-    GameEngine* engine = new GameEngine();
+    GameEngine engine = GameEngine();
+    engine.setFPSRate(FPS_30);
 
-    int shaderProgramId = engine->getShaderProgramId();
-    Scene* scene = Scene::Builder(shaderProgramId)
+    int shaderProgramId = engine.getShaderProgramId();
+    /*Scene* scene = Scene::Builder(shaderProgramId)
         .setSceneFile("scene_1.json")
-        .build();
+        .build();*/
 
-    engine->setCurrentScene(scene);
-    engine->init();
-    engine->runGameLoop();
-    engine->stop();
+   
+    SceneLevel1 scene(engine.getShaderProgramId(), "scene_1.json");
+    BaseScene* baseScenePtr = &scene;
+
+    engine.setCurrentScene(&scene);
+    engine.init();
+    engine.runGameLoop();
+    engine.stop();
 
     return 0;
 }

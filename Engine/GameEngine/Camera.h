@@ -44,7 +44,7 @@ private:
     void updateCameraVectors();
 
     float movementSpeed = 0.01f;
-    float sensitivity = 1.5f;
+    float sensitivity = 1.0f;
 
     GLFWwindow* window;
 };

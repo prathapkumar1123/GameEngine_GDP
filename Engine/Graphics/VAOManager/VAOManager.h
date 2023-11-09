@@ -3,6 +3,8 @@
 #include <string>
 #include <map>
 
+#include <glm/glm.hpp>
+
 struct TrianglePlyFile
 {
 	unsigned int v0, v1, v2;
@@ -20,6 +22,10 @@ struct ModelDrawInfo
 	ModelDrawInfo();
 
 	std::string meshName;
+
+	glm::vec3 size;
+	glm::vec3 minVertex;
+	glm::vec3 maxVertex;
 
 	unsigned int VAO_ID;
 	unsigned int VERTEX_BUFFER_ID;

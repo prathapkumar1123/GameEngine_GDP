@@ -3,13 +3,16 @@
 #include "../../Core/OpenGlCommons.h"
 #include "../../Core/Globals.h"
 
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 #include <iostream>
+#include <stdlib.h>
 #include <windows.h>
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <algorithm>
+
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 ModelDrawInfo::ModelDrawInfo()
 {
@@ -125,7 +128,7 @@ bool VAOManager::loadModelIntoVAO(
     GLint vNormal_location = glGetAttribLocation(shaderProgramID, "vNormal");
 
     // Set the vertex attributes for this shader
-    glEnableVertexAttribArray(vpos_location);	    // vPos
+    glEnableVertexAttribArray(vpos_location);	// vPos
     glVertexAttribPointer(vpos_location, 4,		// vPos
         GL_FLOAT, GL_FALSE,
         sizeof(VertexInfo),
@@ -188,15 +191,10 @@ bool VAOManager::loadPlyFile_XYZ_N_RGBA(
         path = buffer + std::wstring(pBasePath.begin(), pBasePath.end());
     }
 
-    std::cout << pBasePath + "/" + fileName.c_str() << std::endl;
-
     std::ifstream modelFile(pBasePath + "/" + fileName.c_str());
-
-    std::cout << modelFile.tellg() << std::endl;
 
     if (!modelFile.is_open()) {
         std::cout << modelFile.tellg() << std::endl;
-
         return false;
     }
 
@@ -227,6 +225,9 @@ bool VAOManager::loadPlyFile_XYZ_N_RGBA(
     // Dynamically allocate memory on the heap;
     mDrawInfo.mVertices = new VertexInfo[mDrawInfo.NUM_OF_VERTICES];
 
+    glm::vec3 minPoint(0, 0, 0);
+    glm::vec3 maxPoint(0, 0, 0);
+
     // -0.036872 0.127727 0.00440925
     for (unsigned int index = 0; index != mDrawInfo.NUM_OF_VERTICES; index++)
     {
@@ -251,8 +252,23 @@ bool VAOManager::loadPlyFile_XYZ_N_RGBA(
         modelFile >> tempVertex.a;
         tempVertex.a /= 255.0f;
 
+        //glm::vec3 vertexVector(tempVertex.x, tempVertex.x, tempVertex.x);
+            
+        minPoint.x = minPoint.x < tempVertex.x ? minPoint.x : tempVertex.x;
+        minPoint.y = minPoint.y < tempVertex.y ? minPoint.y : tempVertex.y;
+        minPoint.z = minPoint.z < tempVertex.z ? minPoint.z : tempVertex.z;
+
+        maxPoint.x = maxPoint.x > tempVertex.x ? maxPoint.x : tempVertex.x;
+        maxPoint.y = maxPoint.y > tempVertex.y ? maxPoint.y : tempVertex.y;
+        maxPoint.z = maxPoint.z > tempVertex.z ? maxPoint.z : tempVertex.z;
+
         mDrawInfo.mVertices[index] = tempVertex;
     }
+
+    mDrawInfo.minVertex = minPoint;
+    mDrawInfo.maxVertex = maxPoint;
+
+    mDrawInfo.size = maxPoint - minPoint;
 
     TrianglePlyFile* pTheTriangles = new TrianglePlyFile[mDrawInfo.NUM_OF_TRIANGLES];
 

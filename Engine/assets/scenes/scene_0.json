@@ -1,0 +1,23 @@
+{
+    "scene": {
+		"camera": {
+			"position": [0,0,0],
+			"pitch": 0.0,
+			"yaw": 0.0
+		},
+		"models": [
+			{
+			  "name": "ship",
+			  "file": "SM_Ship_Massive_Transport.ply",
+			  "position": [0,0,0],
+			  "scale": [0,0,0],
+			  "rotation": [0,0,0],
+			  "setUniformDrawScale": true,
+			  "uniformDrawScale": 0.001,
+			  "isVisible": true,
+			  "isMesh": false,
+			  "meshName": "ship"
+			}
+		],
+    }
+  }

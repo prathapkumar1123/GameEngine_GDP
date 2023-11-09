@@ -4,12 +4,12 @@
 
 unsigned int GameObject::mNextUniqueID = GameObject::FIRST_UNIQUE_ID;
 
-GameObject::GameObject(const std::string& meshName) {
-	this->meshName = meshName;
+GameObject::GameObject(const std::string& fileName) {
+	this->fileName = fileName;
 
 	this->drawPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-	this->setRotationFromEuler(glm::vec3(0.0f, 0.0f, 0.0f));
 	this->drawScale = glm::vec3(1.0f);
+	this->setRotationFromEuler(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	this->bIsWireframe = false;
 	this->bDoNotLight = false;
@@ -17,28 +17,51 @@ GameObject::GameObject(const std::string& meshName) {
 	this->bUseDebugColours = false;
 	this->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	// Set uniqueID
+	this->inverse_mass = -1.0f;
+
 	this->mUniqueID = mNextUniqueID;
 	mNextUniqueID++;
 }
 
 GameObject::~GameObject() {}
 
-std::string GameObject::getMeshName() {
-	return meshName;
+std::string GameObject::getFileName() {
+	return fileName;
 }
 
 unsigned int GameObject::getUniqueID(void) {
 	return this->mUniqueID;
 }
 
+glm::vec3 GameObject::getDrawPosition(void) {
+	return this->drawPosition;
+}
+
+glm::vec3 GameObject::getRotation() {
+	return rotation;
+}
+
+void GameObject::setRotation(glm::vec3 rotation) {
+	this->rotation = rotation;
+}
+
+void GameObject::setRotationFromEuler(glm::vec3 newEulerAngleXYZ) {
+	this->quatOrientation = glm::quat(newEulerAngleXYZ);
+	this->rotation = newEulerAngleXYZ;
+}
+
+void GameObject::adjustRoationAngleFromEuler(glm::vec3 EulerAngleXYZ_Adjust) {
+	glm::quat qChange = glm::quat(EulerAngleXYZ_Adjust);
+	this->quatOrientation *= qChange;
+}
+
+glm::quat GameObject::getQuatOrientation(void) {
+	return this->quatOrientation;
+}
+
 void GameObject::setUniformDrawScale(float scale) {
 	this->drawScale.x = this->drawScale.y = this->drawScale.z = scale;
 	return;
-}
-
-glm::vec3 GameObject::getDrawPosition(void) {
-	return this->drawPosition;
 }
 
 void GameObject::setDrawPosition(const glm::vec3& newPosition) {
@@ -47,7 +70,7 @@ void GameObject::setDrawPosition(const glm::vec3& newPosition) {
 }
 
 glm::vec3 GameObject::getDrawOrientation(void) {
-	return glm::eulerAngles(this->get_qOrientation());
+	return glm::eulerAngles(this->getQuatOrientation());
 }
 
 void GameObject::setDrawOrientation(const glm::vec3& newOrientation) {
@@ -56,6 +79,18 @@ void GameObject::setDrawOrientation(const glm::vec3& newOrientation) {
 }
 
 void GameObject::setDrawOrientation(const glm::quat& newOrientation) {
-	this->m_qOrientation = newOrientation;
+	this->quatOrientation = newOrientation;
 	return;
+}
+
+void GameObject::onCollided(GameObject* collisionWith, bool isCollided) {
+
+}
+
+void GameObject::update(float deltatime) {
+
+}
+
+void GameObject::resolveCollisions() {
+
 }

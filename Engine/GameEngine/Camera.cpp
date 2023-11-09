@@ -2,11 +2,11 @@
 
 #include <iostream>
 
-Camera::Camera(): gCameraEye(0.0f, 0.0f, 10.0f), yaw(0.0f), pitch(0.0f), position(0.0f, 0.0f, 10.0f),
-front(0.0f, 0.0f, -1.0f), up(0.0f, 1.0f, 0.0f),
+Camera::Camera(): gCameraEye(0.0f, 0.0f, 10.0f), yaw(-90.0f), pitch(-28.0f), position(0.027f, 14.41f, 25.45f),
+front(0.0f, 0.0f, -1.0f), up(0.0f, 0.001f, 0.0f),
 right(1.0f, 0.0f, 0.0f), worldUp(0.0f, 1.0f, 0.0f), window(nullptr) {
-    movementSpeed = 0.01f;
-    sensitivity = 1.5f;
+    movementSpeed = 0.1f;
+    sensitivity = 0.5f;
     window = NULL;
 
     front = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -17,7 +17,6 @@ right(1.0f, 0.0f, 0.0f), worldUp(0.0f, 1.0f, 0.0f), window(nullptr) {
 Camera::~Camera() {}
 
 glm::mat4 Camera::getViewMatrix() {
-    std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
     return glm::lookAt(position, position + front, up);
 }
 
@@ -28,17 +27,17 @@ void Camera::setGLWindow(GLFWwindow* win) {
 
 void Camera::processKeyboardInput(float deltaTime) {
     if (window != NULL) {
-        float velocity = movementSpeed * deltaTime;
+        float velocity = movementSpeed;
 
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        /*if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
             position += front * velocity;
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
             position -= front * velocity;
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            position -= right * velocity;
+            position -= right * velocity;   
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            position += right * velocity;
+            position += right * velocity;*/
 
         // Handle camera movement up and down
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)  // Space for moving up
@@ -51,6 +50,12 @@ void Camera::processKeyboardInput(float deltaTime) {
             yaw -= sensitivity;
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)  // E for rotating right
             yaw += sensitivity;
+
+        // Handle camera rotation
+        if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)  // Q for rotating left
+            pitch -= sensitivity;
+        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)  // E for rotating right
+            pitch += sensitivity;
 
         // Call updateViewMatrix to keep the camera's orientation up to date
         updateViewMatrix();

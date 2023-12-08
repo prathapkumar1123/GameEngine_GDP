@@ -1,32 +1,61 @@
 {
   "scene": {
+    "lights": {
+      "turnOn": true,
+      "drawLightsToModel": true,
+      "lights": [
+        {
+          "type": "point",
+          "position": [ 0, 500, 0 ],
+          "direction": [ 0, 0, 0 ],
+          "innerAngle": 0,
+          "outerAngle": 0,
+          "constantAttenuation": 1.0,
+          "linearAttenuation": 0.1,
+          "quadraticAttenuation": 0.001,
+          "diffuseColor": [ 1.0, 1.0, 1.0, 1.0 ],
+          "specularColor": [ 0.2, 0.2, 0.2, 1.0 ]
+        }
+      ]
+    },
+    "camera": {
+      "position": [ -20, -50, 740 ],
+      "pitch": 0,
+      "yaw": -90,
+      "cameraEye": [ 0, 0, 0 ],
+      "movementSpeed": 1.0,
+      "sensitivity": 1.0,
+      "front": [ 0, 0, -1 ],
+      "up": [ 0, 0.001, 0 ],
+      "right": [ 1, 0, 0 ],
+      "worldUp": [ 0, 1, 0 ]
+    },
     "models": [
       {
-        "name": "floor",
-        "file": "block.ply",
-        "position": [0, 0, 0],
-        "scale": [20, 1, 20],
-        "rotation": [0, 0, 0],
-        "setUniformDrawScale": false,
-        "uniformDrawScale": 1
+        "name": "city",
+        "file": "city_rv.ply",
+        "position": [ 0, 0, 0 ],
+        "scale": [ 10, 10, 10 ],
+        "rotation": [ 0, 0, 0 ],
+        "setUniformDrawScale": true,
+        "uniformDrawScale": 20,
+        "useCustomColor": false,
+        "inverseMass": 1.0,
+        "customColor": [ 1, 1, 1, 1.0 ]
       },
       {
-        "name": "stairs",
-        "file": "stairs.ply",
-        "position": [-8.5, 1, 0],
-        "scale": [20, 3, 3],
-        "rotation": [0, 90, 0],
+        "name": "sea",
+        "file": "Big_Flat_Mesh_256x256_00_132K_xyz_n_rgba_uv.ply",
+        "position": [ 0, -80, 0 ],
+        "scale": [ 1000, 1, 1000 ],
+        "rotation": [ 0, 0, 0 ],
         "setUniformDrawScale": false,
-        "uniformDrawScale": 1
-      },
-      {
-        "name": "stairs_1",
-        "file": "stairs.ply",
-        "position": [8.5, 1, 0],
-        "scale": [20, 3, 3],
-        "rotation": [0, -90, 0],
-        "setUniformDrawScale": false,
-        "uniformDrawScale": 1
+        "uniformDrawScale": 1.0,
+        "useCustomColor": false,
+        "inverseMass": 1.0,
+        "customColor": [ 1, 0, 0, 1.0 ],
+        "textureName":  "water_texture",
+        "textures": [ "water_texture.bmp" ]
       }
     ]
   }

@@ -20,28 +20,6 @@
 #include "../Graphics/GameObject/GameObject.h"
 #include "../Graphics/VAOManager/VAOManager.h"
 
-struct BoundingBox3D {
-    glm::vec3 min, max;
-
-    BoundingBox3D(const glm::vec3& _min, const glm::vec3& _max) : min(_min), max(_max) {}
-
-    bool contains(const glm::vec3& point) {
-        return (point.x >= min.x && point.x <= max.x &&
-            point.y >= min.y && point.y <= max.y &&
-            point.z >= min.z && point.z <= max.z);
-    }
-
-    bool intersects(const BoundingBox3D& other) {
-        // Exit with no intersection if separated along an axis
-        if (this->max.x < other.min.x || this->min.x > other.max.x) return false;
-        if (this->max.y < other.min.y || this->min.y > other.max.y) return false;
-        if (this->max.z < other.min.z || this->min.z > other.max.z) return false;
-
-        // Overlapping on all axes means BoundingBoxes are intersecting
-        return true;
-    }
-};
-
 class OctreeNode {
 public:
     int depth;
@@ -118,6 +96,8 @@ private:
             }
             insertRecursive(node->children[i], gameObject, depth + 1);
         }
+
+        node->objects.push_back(gameObject);
     }
 
     void createChildNode(OctreeNode* parent, int index) {
@@ -169,9 +149,7 @@ private:
             BoundingBox3D objBB = BoundingBox3D(obj->getBoundingBoxMin(), obj->getBoundingBoxMax());
 
             if (nodeBounds.intersects(objBB) && node->objects.size() > 1 && node->depth == maxDepth) {
-                // Collision detected, add the object to the collisions map.
                 collisions[obj->simpleName] = obj;
-                // obj->onCollided();
                 /*std::cout << obj->simpleName << " - Collision Detected at: " << node->min.x << ", " << node->min.y << ", " << node->min.z << " : "
                     << node->max.x << ", " << node->max.y << ", " << node->max.z << std::endl;*/
             }
@@ -184,5 +162,4 @@ private:
             }
         }
     }
-
 };

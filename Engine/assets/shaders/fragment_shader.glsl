@@ -1,24 +1,46 @@
 // Fragment shader
 #version 420
 
-in vec4 colour;
-in vec4 vertexWorldPos;			// vertex in "world space"
-in vec4 vertexWorldNormal;	
+in vec4 fColour;
+in vec4 fVertexWorldPos;
+in vec4 fVertexWorldNormal;	
+in vec2 fTextureCoords;
 
-out vec4 outputColour;		// To the frame buffer (aka screen)
-
-//uniform vec3 directionalLightColour;
-// rgb are the rgb of the light colour
-//uniform vec4 directionalLight_Direction_power;
-// xyz is the normalized direction, w = power (between 0 and 1)
-
-// If true, then passes the colour without calculating lighting
-uniform bool bDoNotLight;		// Really a float (0.0 or not zero)
+out vec4 outputColour;
 
 uniform vec4 eyeLocation;
+uniform vec4 debugColourRGBA;
 
-uniform bool bUseDebugColour;	// if this is true, then use debugColourRGBA for the colour
-uniform vec4 debugColourRGBA;		
+uniform bool bDoNotLight;
+uniform bool bUseDebugColour;
+uniform bool bUseVertexColors;
+
+uniform float transparencyAlpha;
+
+uniform sampler2D texture_00;
+uniform sampler2D texture_01;
+uniform sampler2D texture_02;
+uniform sampler2D texture_03;
+uniform sampler2D texture_04;			
+uniform sampler2D texture_05;
+uniform sampler2D texture_06;
+uniform sampler2D texture_07;
+
+uniform bool bUseHeightMap;
+uniform sampler2D heightMapSampler;
+uniform sampler2D discardSampler;
+
+// Skybox, cubemap, etc.
+uniform bool bIsSkyBox;
+uniform samplerCube skyBoxTexture;
+
+// For the discard example
+uniform bool bUseDiscardMaskTexture;
+uniform sampler2D maskSamplerTexture01;
+
+//... and so on
+uniform vec4 textureMixRatio_0_3;		// 1, 0, 0, 0 
+uniform vec4 textureMixRatio_4_7;
 
 struct sLight
 {
@@ -39,31 +61,48 @@ const int SPOT_LIGHT_TYPE = 1;
 const int DIRECTIONAL_LIGHT_TYPE = 2;
 
 const int NUMBEROFLIGHTS = 10;
-uniform sLight theLights[NUMBEROFLIGHTS];  	// 70 uniforms
-//... is really:
-//uniform vec4 theLights[0].position;
-//uniform vec4 theLights[1].position;
-//uniform vec4 theLights[2].position;
-// etc...
-
+uniform sLight theLights[NUMBEROFLIGHTS];
 
 vec4 calculateLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
                             vec3 vertexWorldPos, vec4 vertexSpecular );
 
 
-void main()
-{
-//	gl_FragColor = vec4(color, 1.0);
+void main() {
 
-	vec4 vertexRGBA = colour;
+	if ( bUseDiscardMaskTexture ) {
+		float maskValue = texture( maskSamplerTexture01, fTextureCoords.st ).r;
+		if ( maskValue < 0.1f ) {
+			discard; 		// If "black" then discard
+		}	
+	}
 	
-	if ( bUseDebugColour )
-	{	
+	if ( bIsSkyBox ) {
+		vec4 skyBoxSampleColour = texture( skyBoxTexture, fVertexWorldNormal.xyz ).rgba;
+		outputColour.rgb = skyBoxSampleColour.rgb;
+		outputColour.a = 1.0f;
+		return;
+	}
+	
+
+	vec4 textureColour = 
+			  texture( texture_00, fTextureCoords.st ).rgba * textureMixRatio_0_3.x 	
+			+ texture( texture_01, fTextureCoords.st ).rgba * textureMixRatio_0_3.y
+			+ texture( texture_02, fTextureCoords.st ).rgba * textureMixRatio_0_3.z
+			+ texture( texture_03, fTextureCoords.st ).rgba * textureMixRatio_0_3.w;
+
+	// Make the 'vertex colour' the texture colour we sampled...
+	vec4 vertexRGBA = textureColour;	
+	
+	// ...unless we want to use the vertex colours from the model
+	if (bUseVertexColors) {
+		vertexRGBA = fColour; // Use model vertex colour and NOT the texture colour
+	}
+	
+	if ( bUseDebugColour ) {	
 		vertexRGBA = debugColourRGBA;
 	}
 	
-	if ( bDoNotLight )
-	{
+	if ( bDoNotLight ) {
 		outputColour = vertexRGBA;
 		return;
 	}
@@ -71,12 +110,13 @@ void main()
 	// *************************************
 	// Hard code the specular (for now)
 	vec4 vertexSpecular = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
 	// xyzw or rgba or stuw
 	// RGB is the specular highglight colour (usually white or the colour of the light)
 	// 4th value is the specular POWER (STARTS at 1, and goes to 1000000s)
 	
-	vec4 vertexColourLit = calculateLightContrib( vertexRGBA.rgb, vertexWorldNormal.xyz, 
-	                                              vertexWorldPos.xyz, vertexSpecular );
+	vec4 vertexColourLit = calculateLightContrib( vertexRGBA.rgb, fVertexWorldNormal.xyz, 
+	                                              fVertexWorldPos.xyz, vertexSpecular );
 	// *************************************
 			
 	outputColour.rgb = vertexColourLit.rgb;
@@ -84,7 +124,10 @@ void main()
 	// Real gamma correction is a curve, but we'll Rock-n-Roll it here
 	outputColour.rgb *= 1.35f;
 	
+	// This is where the alpha transparency happens
 	outputColour.a = 1.0f;
+	//outputColour.a = transparencyAlpha;
+	
 }
 
 
@@ -235,16 +278,3 @@ vec4 calculateLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal,
 	
 	return finalObjectColour;
 }
-
-
-//	// For now, just trust Michael
-//	// Very basic directional shader
-//	vec3 lightContrib = directionalLightColour * directionalLight_Direction_power.w;
-//	// 
-//	// Get the dot product of the light and normalize
-//	float dotProduct = dot( -directionalLight_Direction_power.xyz,  
-//							vertexWorldNormal.xyz );	
-//	// Clamp this to a positive number
-//	dotProduct = max( 0.0f, dotProduct );		// 0 to 1		
-//	
-//	lightContrib *= dotProduct;		

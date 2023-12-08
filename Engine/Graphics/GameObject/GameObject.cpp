@@ -14,7 +14,7 @@ GameObject::GameObject(const std::string& fileName) {
 	this->bIsWireframe = false;
 	this->bDoNotLight = false;
 	this->bIsVisible = true;
-	this->bUseDebugColours = false;
+	this->bUseDebugColors = false;
 	this->wholeObjectDebugColourRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	this->inverse_mass = -1.0f;
@@ -25,8 +25,20 @@ GameObject::GameObject(const std::string& fileName) {
 
 GameObject::~GameObject() {}
 
+void GameObject::setFileName(std::string fileName) {
+	this->fileName = fileName;
+}
+
 std::string GameObject::getFileName() {
 	return fileName;
+}
+
+void GameObject::setMesh(Mesh* mesh) {
+	this->mesh = mesh;
+}
+
+Mesh* GameObject::getMesh() {
+	return mesh;
 }
 
 unsigned int GameObject::getUniqueID(void) {
@@ -50,7 +62,7 @@ void GameObject::setRotationFromEuler(glm::vec3 newEulerAngleXYZ) {
 	this->rotation = newEulerAngleXYZ;
 }
 
-void GameObject::adjustRoationAngleFromEuler(glm::vec3 EulerAngleXYZ_Adjust) {
+void GameObject::adjustRotationAngleFromEuler(glm::vec3 EulerAngleXYZ_Adjust) {
 	glm::quat qChange = glm::quat(EulerAngleXYZ_Adjust);
 	this->quatOrientation *= qChange;
 }
@@ -81,10 +93,6 @@ void GameObject::setDrawOrientation(const glm::vec3& newOrientation) {
 void GameObject::setDrawOrientation(const glm::quat& newOrientation) {
 	this->quatOrientation = newOrientation;
 	return;
-}
-
-void GameObject::onCollided(GameObject* collisionWith, bool isCollided) {
-
 }
 
 void GameObject::update(float deltatime) {

@@ -1,4 +1,6 @@
 #include "GameEngine.h"
+#include "HRTimer.h"
+#include "../Game/SceneLevel1.h"
 
 #include <windows.h>
 #include <locale>
@@ -10,9 +12,10 @@ public:
     GLRenderer* glRenderer;
 
     bool isGameLoopRunning = true;
-    double lastTime;
+    double lastTime = 0.0f;
 
-    BaseScene* currentScene;
+    void setCurrentScene(BaseScene* scene);
+    BaseScene* getCurrentScene();
 
     std::string modelsBasePath = "/assets/models";
     std::string shadersBasePath = "assets/shaders";
@@ -23,7 +26,12 @@ public:
 
     void loadAllModels();
 
+    void reload();
+
+    HRTimer* timer;
+
 private:
+    BaseScene* currentScene;
     void loadModelIntoVAO(std::string modelName);
 };
 
@@ -58,14 +66,26 @@ void GameEngine::GameEngineImpl::loadAllModels() {
 
 void GameEngine::GameEngineImpl::loadModelIntoVAO(std::string modelName) {
     ModelDrawInfo modeInfo;
-    glRenderer->mGameObjectManager->loadModelIntoVAO(modelName, modeInfo, glRenderer->getShaderProgramId());
+    glRenderer->mGameObjectManager->loadModelIntoVAO(modelName, modeInfo);
 }
 
+void GameEngine::GameEngineImpl::reload() {
+
+}
+
+void GameEngine::GameEngineImpl::setCurrentScene(BaseScene* scene) {
+    this->currentScene = scene;
+    this->glRenderer->setCurrentScene(scene);
+}
+
+BaseScene* GameEngine::GameEngineImpl::getCurrentScene() {
+    return this->currentScene;
+}
 
 GameEngine::GameEngine(): impl(new GameEngineImpl) {
     impl->glRenderer = new GLRenderer();
     impl->loadAllModels();
-    impl->lastTime = glfwGetTime();
+    impl->timer = new HRTimer(60);
 }
 
 GameEngine::~GameEngine() {
@@ -73,7 +93,8 @@ GameEngine::~GameEngine() {
 }
 
 void GameEngine::init() {
-    impl->currentScene->loadScene();
+    impl->getCurrentScene()->loadScene();
+    impl->lastTime = glfwGetTime();
 }
 
 void GameEngine::stop() {
@@ -82,7 +103,6 @@ void GameEngine::stop() {
  
 void GameEngine::release() {
     delete impl->glRenderer;
-    delete impl;
 }
 
 void GameEngine::setFPSRate(FPS_RATE fpsRate) {
@@ -103,17 +123,25 @@ VAOManager* GameEngine::getVAOManager() {
 
 void GameEngine::runGameLoop() {
     while (impl->isGameLoopRunning && !glfwWindowShouldClose(impl->glRenderer->getWindow())) {
-        double currentTime = glfwGetTime();
-        double deltaTime = currentTime - impl->lastTime;
 
-        impl->glRenderer->run(deltaTime);
+        if (impl->getCurrentScene()->isSceneLoaded) {
+            double deltaTime = impl->timer->getFrameTime();
 
-        for (const auto& renderFunc : impl->renderFunctions) {
-            renderFunc();
-        }
+            if (glfwGetKey(getWindow(), GLFW_KEY_R) == GLFW_PRESS) {
+                getCurrentScene()->loadScene();
+            }
 
-        for (const auto& updateFunc: impl->updateFunctions) {
-            updateFunc(deltaTime);
+            if (impl->glRenderer != nullptr)
+                impl->glRenderer->run(deltaTime);
+
+
+            /*for (const auto& renderFunc : impl->renderFunctions) {
+                renderFunc();
+            }
+
+            for (const auto& updateFunc: impl->updateFunctions) {
+                updateFunc(deltaTime);
+            }*/
         }
     }
 }
@@ -127,7 +155,7 @@ void GameEngine::registerRenderFunction(std::function<void()> renderFunc) {
 }
 
 BaseScene* GameEngine::getCurrentScene() {
-    return this->impl->currentScene;
+    return this->impl->getCurrentScene();
 }
 
 GLFWwindow* GameEngine::getWindow() {
@@ -136,7 +164,7 @@ GLFWwindow* GameEngine::getWindow() {
 
 void GameEngine::setCurrentScene(BaseScene* scene) {
     impl->glRenderer->setCurrentScene(scene);
-    impl->currentScene = scene;
+    impl->setCurrentScene(scene);
     scene->setVAOManager(getVAOManager());
 }
 

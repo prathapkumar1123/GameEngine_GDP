@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 
-enum eShaderType { VERTEX_SHADER, FRAGMENT_SHADER, UNKNOWN };
+enum eShaderType { VERTEX_SHADER, GEOMETRY_SHADER, FRAGMENT_SHADER, UNKNOWN };
 
 class Shader {
 public:
@@ -36,12 +36,9 @@ public:
 	std::string fileName;
 	std::string shaderProgramName;
 	std::map< std::string, int> mapUniformNameToLocation;
-
-	// Returns -1 (just like OpenGL) if NOT found
-	int getUniformIDFromName(std::string name);
-
-	// Look up the uniform location and save it.
-	bool loadUniformLocation(std::string variableName);
+	
+	int getUniformIDFromName(std::string name);				// Returns -1 (just like OpenGL) if NOT found
+	bool loadUniformLocation(std::string variableName);		// Look up the uniform location and save it.
 };
 
 class ShaderManager
@@ -52,7 +49,7 @@ public:
 
 	bool useShaderProgram(unsigned int id);
 	bool useShaderProgram(std::string shaderProgramName);
-	bool createProgramFromFile(std::string shaderName, Shader& vShader, Shader& fShader);
+	bool createProgramFromFile(std::string shaderName, Shader& vShader, Shader& gShader, Shader& fShader);
 
 	void setBasePath(std::string basePath);
 	unsigned int getIDFromName(std::string name);
@@ -66,10 +63,10 @@ public:
 private:
 
 	const std::string defaultShadersPath = "assets/shaders";
+	std::string pbasePath = defaultShadersPath;
 
 	// Returns an empty string if it didn't work
 	bool pLoadSourceFromFile(Shader& shader);
-	std::string pbasePath = "assets/shaders";
 
 	bool pCompileShaderFromSource(Shader& shader, std::string& error);
 

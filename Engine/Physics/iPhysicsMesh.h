@@ -5,6 +5,12 @@
 #include <glm/gtc/quaternion.hpp>
 
 struct sCollisionEvent {
+	float collidedObjRadius = 0.0f;
+
+	float collidedObjMass;
+	glm::vec3 collisionNormal;
+	glm::vec3 relativeVelocity;
+
 	glm::vec3 colObjMinVertex;
 	glm::vec3 colObjMaxVertex;
 
@@ -21,7 +27,7 @@ public:
 	glm::vec3 velocity;
 	glm::vec3 acceleration;
 	glm::vec3 rotation;
-	float inverse_mass = 1.0f;
+	float inverse_mass = 0.0f;
 
 	virtual glm::vec3 getDrawPosition(void) = 0;
 	virtual glm::vec3 getDrawOrientation(void) = 0;
@@ -37,6 +43,6 @@ public:
 	// Rotation
 	virtual void setRotation(glm::vec3 rotation) = 0;
 	virtual void setRotationFromEuler(glm::vec3 newEulerAngleXYZ) = 0;
-	virtual void adjustRoationAngleFromEuler(glm::vec3 EulerAngleXYZ_Adjust) = 0;
+	virtual void adjustRotationAngleFromEuler(glm::vec3 EulerAngleXYZ_Adjust) = 0;
 
 };

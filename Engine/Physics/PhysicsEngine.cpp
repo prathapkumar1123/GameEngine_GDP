@@ -1,5 +1,6 @@
 #include "PhysicsEngine.h"
 #include "OctaMap.h"
+#include "OctMap.h"
 
 #include <iostream>
 
@@ -11,13 +12,12 @@ void PhysicsEngine::setVAOManager(VAOManager* mMeshManager) {
 	this->mMeshManager = mMeshManager;
 }
 
-void PhysicsEngine::setObjects(std::vector<GameObject*> objects) {
+void PhysicsEngine::setObjects(std::vector<GameObject*>* objects) {
 	this->mCollisionObjects = objects;
 }
 
-
 GameObject* PhysicsEngine::findShapeByUniqueID(unsigned int uniqueIDtoFind) {
-	for (GameObject* pObject : this->mCollisionObjects){
+	for (GameObject* pObject : *mCollisionObjects){
 		if (pObject->getUniqueID() == uniqueIDtoFind) {
 			return pObject;
 		}
@@ -27,7 +27,7 @@ GameObject* PhysicsEngine::findShapeByUniqueID(unsigned int uniqueIDtoFind) {
 }
 
 GameObject* PhysicsEngine::findShapeByFriendlyName(std::string friendlyNameToFind) {
-	for (GameObject* pObject : this->mCollisionObjects) {
+	for (GameObject* pObject : *mCollisionObjects) {
 		if (pObject->simpleName == friendlyNameToFind) {
 			return pObject;
 		}
@@ -47,51 +47,63 @@ bool PhysicsEngine::rayCast(glm::vec3 startXYZ, glm::vec3 endXYZ, std::vector<sP
 
 void PhysicsEngine::updatePhysics(double deltaTime) {
 
-	std::map<std::string, GameObject*> collisionObjects;
+	//BoundingBox3D worldBounds(glm::vec3(-100, -100, -100), glm::vec3(100, 100, 100));
+	//Octree octree(worldBounds, 4);
 
-	for (GameObject* colObj : mCollisionObjects) {
+	for (GameObject* colObj : *mCollisionObjects) {
 
 		if (colObj->inverse_mass >= 0.0f) {
 			colObj->update(deltaTime);
 		}
 
-		glm::vec3 minPoint = colObj->getBoundingBoxMin();
-		glm::vec3 maxPoint = colObj->getBoundingBoxMax();
+		BoundingBox3D aBounds = BoundingBox3D(colObj->getBoundingBoxMin(), colObj->getBoundingBoxMax());
 
-		BoundingBox3D aBounds = BoundingBox3D(minPoint, maxPoint);
-
-		for (GameObject* sceneObj : mCollisionObjects) {
+		for (GameObject* sceneObj : *mCollisionObjects) {
 
 			if (colObj->simpleName == sceneObj->simpleName) {
 				continue;
 			}
 
-			if (!colObj->isRigidBody || !sceneObj->isRigidBody) {
+			if (colObj->inverse_mass < 0.0f && sceneObj->inverse_mass < 0.0f) {
 				continue;
 			}
 
 			BoundingBox3D bBounds = BoundingBox3D(sceneObj->getBoundingBoxMin(), sceneObj->getBoundingBoxMax());
 
-			if (aBounds.intersects(bBounds)) {
+			if (bBounds.intersects(aBounds)) {
+
+				if (colObj->shapeType == AABB && sceneObj->shapeType == AABB) {
+					sCollisionEvent* event = new sCollisionEvent();
+					colObj->collisionWith[sceneObj->simpleName] = event;
+					sceneObj->collisionWith[colObj->simpleName] = event;
+					sceneObj->resolveCollisions();
+				}
 
 				if (colObj->shapeType == SPHERE &&
 					sceneObj->shapeType == MESH_OF_TRIANGLES_INDIRECT) {
-					if (!this->m_Sphere_TriMeshIndirect_IntersectionTest(colObj, sceneObj)) {
+					if (this->m_Sphere_TriMeshIndirect_IntersectionTest(colObj, sceneObj)) {
+						sceneObj->resolveCollisions();
+					}
+					else {
 						colObj->collisionWith[sceneObj->simpleName] = nullptr;
 					}
 				}
 
 				if (colObj->shapeType == SPHERE &&
 					sceneObj->shapeType == SPHERE) {
-					if (!this->m_Sphere_Sphere_IntersectionTest(sceneObj, colObj)) {
+					if (this->m_Sphere_Sphere_IntersectionTest(sceneObj, colObj)) {
+						sceneObj->resolveCollisions();
+					}
+					else {
 						colObj->collisionWith[sceneObj->simpleName] = nullptr;
 					}
 				}
+
 			}
 			else {
 				colObj->collisionWith[sceneObj->simpleName] = nullptr;
 			}
-		
+
 		}
 
 		colObj->resolveCollisions();

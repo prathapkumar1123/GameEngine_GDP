@@ -2,10 +2,10 @@
 
 #include <iostream>
 
-Camera::Camera(): gCameraEye(0.0f, 0.0f, 10.0f), yaw(-90.0f), pitch(-28.0f), position(0.027f, 14.41f, 25.45f),
+Camera::Camera(): gCameraEye(0.0f, 0.0f, 10.0f), yaw(-90.0f), pitch(-45.0f), position(0.0, 0.0, 0.0),
 front(0.0f, 0.0f, -1.0f), up(0.0f, 0.001f, 0.0f),
 right(1.0f, 0.0f, 0.0f), worldUp(0.0f, 1.0f, 0.0f), window(nullptr) {
-    movementSpeed = 0.1f;
+    movementSpeed = 1.1f;
     sensitivity = 0.5f;
     window = NULL;
 
@@ -29,15 +29,14 @@ void Camera::processKeyboardInput(float deltaTime) {
     if (window != NULL) {
         float velocity = movementSpeed;
 
-        /*if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             position += front * velocity;
-        }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
             position -= front * velocity;
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
             position -= right * velocity;   
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            position += right * velocity;*/
+            position += right * velocity;
 
         // Handle camera movement up and down
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)  // Space for moving up
@@ -77,25 +76,3 @@ void Camera::updateCameraVectors() {
 void Camera::updateViewMatrix() { 
     updateCameraVectors();
 }
-
-// Define a callback function for mouse input
-//void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-//    // Calculate the change in mouse position
-//    float xoffset = xpos - lastX;
-//    float yoffset = lastY - ypos;  // Reversed since y-coordinates range from bottom to top
-//
-//    // Update lastX and lastY for the next frame
-//    lastX = xpos;
-//    lastY = ypos;
-//
-//    // Adjust the camera's yaw and pitch based on mouse movement
-//    camera.yaw += xoffset * camera.sensitivity;
-//    camera.pitch += yoffset * camera.sensitivity;
-//
-//    // Limit pitch to avoid flipping the camera
-//    if (camera.pitch > 89.0f) camera.pitch = 89.0f;
-//    if (camera.pitch < -89.0f) camera.pitch = -89.0f;
-//
-//    // Update the camera's front vector
-//    camera.updateCameraVectors();
-//}

@@ -14,7 +14,7 @@ const unsigned int MAXLINELENGTH = 8 * 1024;
 /// Shader Implementation
 /// </summary>
 Shader::Shader(std::string fileName) {
-	//this->id = 0;
+	this->id = 0;
 	this->fileName = fileName;
 	this->shaderType = eShaderType::UNKNOWN;
 }
@@ -29,6 +29,9 @@ std::string Shader::getShaderTypeString(void) {
 			break;
 		case eShaderType::FRAGMENT_SHADER:
 			return "FRAGMENT_SHADER";
+			break;
+		case eShaderType::GEOMETRY_SHADER:
+			return "GEOMETRY_SHADER";
 			break;
 		case eShaderType::UNKNOWN:
 		default:
@@ -75,9 +78,6 @@ int ShaderProgram::getUniformIDFromName(std::string name) {
 }
 
 
-/// <summary>
-/// Shader Manager Implementation
-/// </summary>
 ShaderManager::ShaderManager() {
 	return;
 }
@@ -102,15 +102,13 @@ bool ShaderManager::useShaderProgram(std::string shaderProgramName) {
 	return true;
 }
 
-bool ShaderManager::createProgramFromFile(std::string shaderName, Shader& vShader, Shader& fShader) {
+bool ShaderManager::createProgramFromFile(std::string shaderName, Shader& vShader, Shader& gShader, Shader& fShader) {
 	std::string errorText = "";
 
 	// Shader loading happening before vertex buffer array
 	vShader.id = glCreateShader(GL_VERTEX_SHADER);
 	vShader.shaderType = eShaderType::VERTEX_SHADER;
 
-	//  char* vertex_shader_text = "wewherlkherlkh";
-	// Load some text from a file...
 	if (!this->pLoadSourceFromFile(vShader)) {
 		return false;
 	}
@@ -122,13 +120,19 @@ bool ShaderManager::createProgramFromFile(std::string shaderName, Shader& vShade
 		return false;
 	}
 
-	fShader.id = glCreateShader(GL_FRAGMENT_SHADER);
-	fShader.shaderType = eShaderType::FRAGMENT_SHADER;
+	gShader.id = glCreateShader(GL_GEOMETRY_SHADER);
+	gShader.shaderType = eShaderType::GEOMETRY_SHADER;
 
-	if (!this->pLoadSourceFromFile(fShader)) {
+	if (!this->pLoadSourceFromFile(gShader)) return false;
+	if (!this->pCompileShaderFromSource(gShader, errorText)) {
+		this->m_lastError = errorText;
 		return false;
 	}
 
+	fShader.id = glCreateShader(GL_FRAGMENT_SHADER);
+	fShader.shaderType = eShaderType::FRAGMENT_SHADER;
+
+	if (!this->pLoadSourceFromFile(fShader)) return false;
 	if (!this->pCompileShaderFromSource(fShader, errorText)) {
 		this->m_lastError = errorText;
 		return false;
@@ -138,6 +142,7 @@ bool ShaderManager::createProgramFromFile(std::string shaderName, Shader& vShade
 	curProgram.id = glCreateProgram();
 
 	glAttachShader(curProgram.id, vShader.id);
+	glAttachShader(curProgram.id, gShader.id);
 	glAttachShader(curProgram.id, fShader.id);
 	glLinkProgram(curProgram.id);
 

@@ -10,9 +10,9 @@ public:
 
     // Implement the pure virtual functions from the base class
     void onInit() override;
-    void onSceneLoaded();
-    void updateScene(float deltaTime);
-    void processKeyboardInput(float deltaTime);
+    void onSceneLoaded() override;
+    void updateScene(float deltaTime) override;
+    void processKeyboardInput(float deltaTime) override;
 
 private:
     Ball* playerBall = nullptr;

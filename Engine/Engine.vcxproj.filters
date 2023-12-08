@@ -63,9 +63,6 @@
     <ClCompile Include="GameEngine\GLRenderer.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Physics\QuadMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Physics\cPhysics_IntersectionTests.cpp">
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
@@ -87,6 +84,21 @@
     <ClCompile Include="Game\SceneLevel1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameEngine\HRTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\TextureManager\C24BitBMPpixel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\TextureManager\cBasicTextureManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\TextureManager\CTextureFromBMP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GameObject\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -96,6 +108,7 @@
     <None Include="assets\shaders\vertex_shader.glsl">
       <Filter>Source Files\Core\Shaders</Filter>
     </None>
+    <None Include="assets\shaders\geometryPassThrough.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine\Camera.h">
@@ -140,22 +153,34 @@
     <ClInclude Include="Physics\sPhysicsProperties.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Physics\QuadMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Physics\OctaMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Ball.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\GameObject\eMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameEngine\BaseScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\SceneLevel1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\OctMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine\HRTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\TextureManager\C24BitBMPpixel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\TextureManager\cBasicTextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\TextureManager\CTextureFromBMP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GameObject\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

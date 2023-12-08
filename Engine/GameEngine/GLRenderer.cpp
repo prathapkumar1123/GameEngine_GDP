@@ -32,7 +32,8 @@ GLRenderer::GLRenderer() {
 }
 
 GLRenderer::~GLRenderer() {
-
+    delete mGameObjectManager;
+    delete shaderManager;
 }
 
 GLFWwindow* GLRenderer::getWindow() {
@@ -43,13 +44,18 @@ void GLRenderer::setVertexShader(std::string name) {
 	vertexShader.setShaderFileName(name);
 }
 
-void GLRenderer::setfragmentShader(std::string name) {
+void GLRenderer::setFragmentShader(std::string name) {
 	fragmentShader.setShaderFileName(name);
+}
+
+void GLRenderer::setGeometryShader(std::string name) {
+    geometryShader.setShaderFileName(name);
 }
 
 void GLRenderer::setCurrentScene(BaseScene* currentScene) {
     std::cout << "Current Scene Setting..." << std::endl;
     this->currentScene = currentScene;
+    this->mTextureManager = currentScene->textureManager;
 
     currentScene->setGLWindow(window);
 }
@@ -66,7 +72,7 @@ void GLRenderer::setWindowWidth(int width) {
     this->windowWidth = width;
 }
 
-void GLRenderer::setWindoHeight(int height) {
+void GLRenderer::setWindowHeight(int height) {
     this->windowHeight = height;
 }
 
@@ -99,95 +105,124 @@ void GLRenderer::initOpenGL() {
     //glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     glfwSwapInterval(1);
 
-    if (!shaderManager->createProgramFromFile(shaderProgramName, vertexShader, fragmentShader)) {
+    if (!shaderManager->createProgramFromFile(shaderProgramName, vertexShader, geometryShader, fragmentShader)) {
         std::cout << "Error: Couldn't compile or link:" << std::endl;
         std::cout << shaderManager->getLastError();
         return;
     }
 
     shaderProgramId = shaderManager->getIDFromName(shaderProgramName);
+    mGameObjectManager->setShaderProgramId(shaderProgramId);
 }
 
 void GLRenderer::run(double deltaTime) {
+    if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) == 0 && currentScene != nullptr) {
 
-    if (deltaTime > (lastDeltaTime + (CURRENNT_FPS_RATE / 30.0f * 0.015))) {
+        currentScene->processKeyboardInput(deltaTime);
+        currentScene->updateScene(deltaTime);
 
-        if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) == 0) {
+        float ratio;
+        int width, height;
+        glUseProgram(shaderProgramId);
 
-            //std::cout << count << ": " << deltaTime << std::endl;
-            //count++;
+        glfwGetFramebufferSize(window, &width, &height);
+        ratio = width / (float)height;
 
-            // getCamera()->processKeyboardInput(deltaTime);
-            currentScene->processKeyboardInput(deltaTime);
-            currentScene->updateScene(deltaTime);
+        glViewport(0, 0, width, height);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            float ratio;
-            int width, height;
-            glUseProgram(shaderProgramId);
+        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
-            glfwGetFramebufferSize(window, &width, &height);
-            ratio = width / (float)height;
+        glEnable(GL_DEPTH_TEST);
+        
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-            glViewport(0, 0, width, height);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //// stencil testing
+        //glEnable(GL_STENCIL_TEST);
+        //// keep fragments if either stencil or depth fails, replace if both pass
+        //glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+        
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
 
-            glEnable(GL_DEPTH_TEST);
-            glCullFace(GL_BACK);
+        //uniform vec4 eyeLocation;
+        GLint eyeLocation_UL = glGetUniformLocation(shaderProgramId, "eyeLocation");
+        glUniform4f(eyeLocation_UL,
+            getCamera().gCameraEye.x,
+            getCamera().gCameraEye.y,
+            getCamera().gCameraEye.z,
+            1.0f
+        );
 
-            //uniform vec4 eyeLocation;
-            GLint eyeLocation_UL = glGetUniformLocation(shaderProgramId, "eyeLocation");
-            glUniform4f(eyeLocation_UL,
-                getCamera().gCameraEye.x,
-                getCamera().gCameraEye.y,
-                getCamera().gCameraEye.z,
-                1.0f
-            );
+        glm::mat4 matProjection = glm::perspective(0.6f, ratio, 0.1f, 10'000.0f);
+        glm::mat4 matView = getCamera().getViewMatrix();
 
-            glm::mat4 matProjection = glm::perspective(0.6f, ratio, 0.1f, 1000.0f);
-            glm::mat4 matView = getCamera().getViewMatrix();
+        GLint matProjection_UL = glGetUniformLocation(shaderProgramId, "matProjection");
+        glUniformMatrix4fv(matProjection_UL, 1, GL_FALSE, glm::value_ptr(matProjection));
 
-            GLint matProjection_UL = glGetUniformLocation(shaderProgramId, "matProjection");
-            glUniformMatrix4fv(matProjection_UL, 1, GL_FALSE, glm::value_ptr(matProjection));
+        GLint matView_UL = glGetUniformLocation(shaderProgramId, "matView");
+        glUniformMatrix4fv(matView_UL, 1, GL_FALSE, glm::value_ptr(matView));
 
-            GLint matView_UL = glGetUniformLocation(shaderProgramId, "matView");
-            glUniformMatrix4fv(matView_UL, 1, GL_FALSE, glm::value_ptr(matView));
+        removeDestroyedObjects();
 
-            if (currentScene != nullptr) {
-                for (unsigned int index = 0; index != currentScene->getObjectsToDraw().size(); index++) {
-                    GameObject* mCurrentObj = currentScene->mObjectsToDraw[index];
-                    if (mCurrentObj->bIsVisible) {
-                        glm::mat4 matModel = glm::mat4(1.0f);
-                        drawObject(mCurrentObj, matModel);
-                    }
+        if (currentScene != nullptr) {
+            for (unsigned int index = 0; index != currentScene->getObjectsToDraw().size(); index++) {
+                GameObject* mCurrentObj = currentScene->mObjectsToDraw[index];
+                if (mCurrentObj->bIsVisible && !mCurrentObj->isOutOfBounds) {
+                    glm::mat4 matModel = glm::mat4(1.0f);
+                    drawObject(mCurrentObj, matModel);
                 }
             }
-
-            PhysicsEngine::getInstance().updatePhysics(deltaTime);
-
-            glfwSwapBuffers(window);
-            glfwPollEvents();
-
-            std::stringstream ssTitle;
-            ssTitle << windowTitle << " -- "
-                << "Camera (x,y,z): "
-                << getCamera().gCameraEye.x << ", "
-                << getCamera().gCameraEye.y << ", "
-                << getCamera().gCameraEye.z << "), "
-                << getCamera().position.x << ", "
-                << getCamera().position.y << ", "
-                << getCamera().position.z << ", Pitch: "
-                << getCamera().pitch << ", Yaw: "
-                << getCamera().yaw << "";
-
-            std::string theTitle = ssTitle.str();
-
-            glfwSetWindowTitle(window, theTitle.c_str());
         }
 
-        lastDeltaTime = deltaTime;
+        {
+            // HACK: I'm making this here, but hey...
+            GameObject* theSkyBox = new GameObject("Sphere_xyz_n_rgba_uv.ply");
+            theSkyBox->simpleName = "skybox";
+            theSkyBox->setUniformDrawScale(5000.0f);
+            theSkyBox->setDrawPosition(Camera::getInstance().position);
+            theSkyBox->bIsVisible = true;
+            theSkyBox->bIsWireframe = false;
+            theSkyBox->bDoNotLight = false;
+            theSkyBox->inverse_mass = 0.0f;
+
+            Mesh* mesh = new Mesh("SunnyDay");
+            theSkyBox->setMesh(mesh);
+
+            GLint bIsSkyBox_UL = glGetUniformLocation(shaderProgramId, "bIsSkyBox");
+            glUniform1f(bIsSkyBox_UL, (GLfloat) GL_TRUE);
+            glCullFace(GL_FRONT);
+
+            drawObject(theSkyBox, glm::mat4(1.0f));
+
+            glUniform1f(bIsSkyBox_UL, (GLfloat)GL_FALSE);
+            glCullFace(GL_BACK);
+        }
+
+        PhysicsEngine::getInstance().updatePhysics(deltaTime);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+
+        std::stringstream ssTitle;
+        ssTitle << windowTitle << " -- "
+            << "Camera (x,y,z): "
+            << getCamera().gCameraEye.x << ", "
+            << getCamera().gCameraEye.y << ", "
+            << getCamera().gCameraEye.z << "), "
+            << getCamera().position.x << ", "
+            << getCamera().position.y << ", "
+            << getCamera().position.z << ", Pitch: "
+            << getCamera().pitch << ", Yaw: "
+            << getCamera().yaw << "";
+
+        std::string theTitle = ssTitle.str();
+
+        glfwSetWindowTitle(window, theTitle.c_str());
     }
 
 }
@@ -231,17 +266,16 @@ void GLRenderer::drawObject(GameObject* mCurrentObj, glm::mat4 matModelParent) {
 
     GLint bDoNotLight_UL = glGetUniformLocation(shaderProgramId, "bDoNotLight");
 
+    glUniform1f(bDoNotLight_UL, (GLfloat) GL_FALSE);
+
     if (mCurrentObj->bDoNotLight) {
         glUniform1f(bDoNotLight_UL, (GLfloat)GL_TRUE);
-    }
-    else {
-        glUniform1f(bDoNotLight_UL, (GLfloat)GL_FALSE);
     }
 
     GLint bUseDebugColour_UL = glGetUniformLocation(shaderProgramId, "bUseDebugColour");
 
-    if (mCurrentObj->bUseDebugColours) {
-        glUniform1f(bUseDebugColour_UL, (GLfloat)GL_TRUE);
+    if (mCurrentObj->bUseDebugColors) {
+        glUniform1f(bUseDebugColour_UL, (GLfloat) GL_TRUE);
         GLint debugColourRGBA_UL = glGetUniformLocation(shaderProgramId, "debugColourRGBA");
         glUniform4f(debugColourRGBA_UL,
             mCurrentObj->wholeObjectDebugColourRGBA.r,
@@ -250,8 +284,28 @@ void GLRenderer::drawObject(GameObject* mCurrentObj, glm::mat4 matModelParent) {
             mCurrentObj->wholeObjectDebugColourRGBA.a);
     }
     else {
-        glUniform1f(bUseDebugColour_UL, (GLfloat)GL_FALSE);
+        glUniform1f(bUseDebugColour_UL, (GLfloat) GL_FALSE);
     }
+
+    GLint bUseVertexColors_UL = glGetUniformLocation(shaderProgramId, "bUseVertexColors");
+    glUniform1f(bUseVertexColors_UL, (GLfloat) GL_TRUE);
+
+    if (mCurrentObj->getMesh() != nullptr) {
+        glUniform1f(bUseVertexColors_UL, (GLfloat) GL_FALSE);
+        this->setupTextures(mCurrentObj->getMesh());
+    }
+    else {
+        glUniform1f(bUseVertexColors_UL, (GLfloat) GL_TRUE);
+    }
+
+    GLint bUseHeightMap_UL = glGetUniformLocation(shaderProgramId, "bUseHeightMap");
+    glUniform1f(bUseHeightMap_UL, (GLfloat) GL_FALSE);
+
+    GLint bUseDiscardMaskTexture_UL = glGetUniformLocation(shaderProgramId, "bUseDiscardMaskTexture");
+    glUniform1f(bUseDiscardMaskTexture_UL, (GLfloat) GL_FALSE);
+
+    //GLint bIsSkyBox_UL = glGetUniformLocation(shaderProgramId, "bIsSkyBox");
+    //glUniform1f(bIsSkyBox_UL, (GLfloat) GL_FALSE);
 
     ModelDrawInfo modelInfo;
     if (mGameObjectManager->findDrawInfoByModelName(mCurrentObj->getFileName(), modelInfo)) {
@@ -279,34 +333,76 @@ void GLRenderer::drawObject(GameObject* mCurrentObj, glm::mat4 matModelParent) {
     return;
 }
 
+void GLRenderer::setupTextures(Mesh* objMesh) {
+
+    {
+        GLint textureUnitNumber = 0;
+        GLuint Texture00 = mTextureManager->getTextureIDFromName(objMesh->textureName[textureUnitNumber]);
+        glActiveTexture(GL_TEXTURE0 + textureUnitNumber);
+        glBindTexture(GL_TEXTURE_2D, Texture00);
+        GLint texture_00_UL = glGetUniformLocation(shaderProgramId, "texture_00");
+        glUniform1i(texture_00_UL, textureUnitNumber);
+    }
+
+    {
+        GLint textureUnitNumber = 1;
+        GLuint Texture01 = mTextureManager->getTextureIDFromName(objMesh->textureName[textureUnitNumber]);
+        glActiveTexture(GL_TEXTURE0 + textureUnitNumber);
+        glBindTexture(GL_TEXTURE_2D, Texture01);
+        GLint texture_01_UL = glGetUniformLocation(shaderProgramId, "texture_01");
+        glUniform1i(texture_01_UL, textureUnitNumber);
+    }
+
+    {
+        GLint textureUnitNumber = 2;
+        GLuint Texture02 = mTextureManager->getTextureIDFromName(objMesh->textureName[textureUnitNumber]);
+        glActiveTexture(GL_TEXTURE0 + textureUnitNumber);
+        glBindTexture(GL_TEXTURE_2D, Texture02);
+        GLint texture_02_UL = glGetUniformLocation(shaderProgramId, "texture_02");
+        glUniform1i(texture_02_UL, textureUnitNumber);
+    }
+
+    {
+        GLint textureUnitNumber = 3;
+        GLuint Texture03 = mTextureManager->getTextureIDFromName(objMesh->textureName[textureUnitNumber]);
+        glActiveTexture(GL_TEXTURE0 + textureUnitNumber);
+        glBindTexture(GL_TEXTURE_2D, Texture03);
+        GLint texture_03_UL = glGetUniformLocation(shaderProgramId, "texture_03");
+        glUniform1i(texture_03_UL, textureUnitNumber);
+    }
+
+    GLint textureMixRatio_0_3_UL = glGetUniformLocation(shaderProgramId, "textureMixRatio_0_3");
+
+    glUniform4f(textureMixRatio_0_3_UL,
+        objMesh->textureRatios[0],
+        objMesh->textureRatios[1],
+        objMesh->textureRatios[2],
+        objMesh->textureRatios[3]);
+
+    // Set up a skybox
+    {
+        // uniform samplerCube skyBoxTexture;		// Texture unit 30
+        GLint textureUnit30 = 30;
+        GLuint skyBoxID = mTextureManager->getTextureIDFromName("SunnyDay");
+        glActiveTexture(GL_TEXTURE0 + textureUnit30);
+        // NOTE: Binding is NOT to GL_TEXTURE_2D
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skyBoxID);
+        GLint skyBoxSampler_UL = glGetUniformLocation(shaderProgramId, "skyBoxTexture");
+        glUniform1i(skyBoxSampler_UL, textureUnit30);
+    }
+
+
+    return;
+}
+
+void GLRenderer::removeDestroyedObjects() {
+    currentScene->mObjectsToDraw.erase(std::remove_if(currentScene->mObjectsToDraw.begin(), currentScene->mObjectsToDraw.end(),
+        [](GameObject* obj) { return obj->isOutOfBounds; }),
+        currentScene->mObjectsToDraw.end());
+}
+
 void GLRenderer::stop() {
     glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
-}
-
-// Define a callback function for mouse input
-void GLRenderer::mouseCallback(GLFWwindow* window, double xpos, double ypos) {
-    //if (camera != nullptr) {
-    //    if (getCamera() != nullptr) {
-    //        // Calculate the change in mouse position
-    //        float xoffset = xpos - lastX;
-    //        float yoffset = lastY - ypos;  // Reversed since y-coordinates range from bottom to top
-
-    //        // Update lastX and lastY for the next frame
-    //        lastX = xpos;
-    //        lastY = ypos;
-
-    //        // Adjust the camera's yaw and pitch based on mouse movement
-    //        getCamera()->yaw += xoffset * (getCamera()->sensitivity - 0.3);
-    //        getCamera()->pitch += yoffset * (getCamera()->sensitivity - 0.3);
-
-    //        // Limit pitch to avoid flipping the camera
-    //        if (getCamera()->pitch > 89.0f) getCamera()->pitch = 89.0f;
-    //        if (getCamera()->pitch < -89.0f) getCamera()->pitch = -89.0f;
-
-    //        // Update the camera's front vector
-    //        getCamera()->updateCameraVectors();
-    //    }
-    //}
 }

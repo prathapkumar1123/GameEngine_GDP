@@ -25,7 +25,7 @@ public:
 
 	void setVAOManager(VAOManager* pMeshManager);
 
-	void setObjects(std::vector<GameObject*> objects);
+	void setObjects(std::vector<GameObject*>* objects);
 
 	GameObject* findShapeByUniqueID(unsigned int uniqueIDtoFind);
 	GameObject* findShapeByFriendlyName(std::string friendlyNameToFind);
@@ -33,7 +33,7 @@ public:
 	// There's a ray cast code in chapter 5 of Ericson's book.
 	bool rayCast(glm::vec3 startXYZ, glm::vec3 endXYZ, std::vector<sPhysicsProperties*>& vecObjectsHit);
 
-	std::vector<GameObject*> mCollisionObjects;
+	std::vector<GameObject*>* mCollisionObjects;
 
 private:
 	PhysicsEngine();

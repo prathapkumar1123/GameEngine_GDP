@@ -152,14 +152,4 @@ struct sPhysicsProperties
 	};
 
 #pragma endregion Shape_Type_Structures
-
-	/*void setShape(const sSphere* pSphereProps);
-	void setShape(const sPlane* pPlaneProps);
-	void setShape(const sTriangle* pTriangleProps);
-	void setShape(const sAABB* pAABBProps);
-	void setShape(const sCapsule* pCapsuleProps);
-	void setShape(const sMeshOfTriangles_Indirect* pMeshProps);
-	void setShape(const sMeshOfTriangles_LocalVertices* pMeshProps);
-
-	std::string getShapeTypeAsString();*/
 };

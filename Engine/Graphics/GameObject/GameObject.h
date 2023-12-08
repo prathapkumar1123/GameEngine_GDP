@@ -2,11 +2,11 @@
 
 #include "../../Physics/iPhysicsMesh.h"
 #include "../../Physics/sPhysicsProperties.h"
+#include "Mesh.h"
 
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <string>
 #include <vector>
 #include <map>
 
@@ -16,17 +16,17 @@ public:
 	~GameObject();
 
 	std::string simpleName;
-	std::string mesh;
 	glm::vec3 drawPosition;
 	glm::vec3 drawScale;
 
-	bool isMesh;
 	bool bIsVisible;
-	bool bUseDebugColours;
+	bool bUseDebugColors;
 	bool bIsWireframe;
 	bool bDoNotLight;
-	bool isRigidBody;
-	bool hasCollider;
+	bool isStatic;
+
+	bool isOutOfBounds = false;
+	bool isDestroyed = false;
 
 	glm::vec3 size;
 	glm::vec3 minVertex;
@@ -41,8 +41,11 @@ public:
 
 	unsigned int getUniqueID(void);
 	std::string getFileName();
-
+	void setFileName(std::string fileName);
 	void setUniformDrawScale(float scale);
+
+	Mesh* getMesh();
+	void setMesh(Mesh* mesh);
 
 	// iPhysics Mesh
 	virtual glm::vec3 getDrawPosition() override;
@@ -56,11 +59,10 @@ public:
 	// Rotation
 	virtual void setRotation(glm::vec3 rotation) override;
 	virtual void setRotationFromEuler(glm::vec3 newEulerAngleXYZ) override;
-	virtual void adjustRoationAngleFromEuler(glm::vec3 EulerAngleXYZ_Adjust) override;
+	virtual void adjustRotationAngleFromEuler(glm::vec3 EulerAngleXYZ_Adjust) override;
 
 	virtual glm::quat getQuatOrientation(void) override;
 
-	virtual void onCollided(GameObject* collisionWith, bool isCollided);
 	virtual void update(float deltaTime);
 
 	virtual void resolveCollisions();
@@ -86,6 +88,8 @@ private:
 	unsigned int mUniqueID;
 	static unsigned int mNextUniqueID;
 	static const unsigned int FIRST_UNIQUE_ID = 1000;
+
+	Mesh* mesh;
 
 	glm::mat4 getTransformMatrix() const {
 		glm::mat4 translation = glm::translate(glm::mat4(1.0f), drawPosition);

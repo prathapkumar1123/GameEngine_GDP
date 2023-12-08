@@ -2,6 +2,7 @@
 
 #include "../Graphics/GameObject/GameObject.h"
 #include "../Graphics/LightsManager/LightManager.h"
+#include "../Graphics/TextureManager/cBasicTextureManager.h"
 #include "../Graphics/VAOManager/VAOManager.h"
 #include "../GameEngine/Camera.h"
 
@@ -16,16 +17,51 @@ public:
 
     std::string sceneFile;
 
+    bool isSceneLoaded = false;
+
     virtual void onInit() = 0;
     virtual void onSceneLoaded() = 0;
     virtual void updateScene(float deltaTime) = 0;
     virtual void processKeyboardInput(float deltaTime) = 0;
+    void loadTextures(std::string textureBMPFile);
+    void loadCubeMapTextures();
 
     void initialize();
 
     void loadScene();
 
-    void addDirectionalLight(glm::vec3 position);
+    void addPointLight(
+        int lightNum,
+        glm::vec3 position,
+        float constantAttenuation,
+        float linearAttenuation,
+        float quadraticAttenuation,
+        glm::vec4 diffuseColor,
+        glm::vec4 specularColor);
+
+    void addDirectionalLight(
+        int lightNum,
+        glm::vec3 position,
+        glm::vec3 direction,
+        float innerAngle,
+        float outerAngle,
+        float constantAttenuation,
+        float linearAttenuation,
+        float quadraticAttenuation,
+        glm::vec4 diffuseColor,
+        glm::vec4 specularColor);
+
+    void addSpotLight(
+        int lightNum,
+        glm::vec3 position,
+        glm::vec3 direction,
+        float innerAngle,
+        float outerAngle,
+        float constantAttenuation,
+        float linearAttenuation,
+        float quadraticAttenuation,
+        glm::vec4 diffuseColor,
+        glm::vec4 specularColor);
 
     void setAssetsPath(std::string assetsPath);
 
@@ -44,21 +80,28 @@ public:
     std::vector<GameObject*> mObjectsToDraw;
 
     VAOManager* objectManager = NULL;
+
+    BasicTextureManager* textureManager = NULL;
+
+    const std::string defaultScenesPath = "assets/scenes";
+    const std::string defaultTexturesPath = "assets/textures";
+    const std::string defaultCubeMapTexturesPath = "assets/textures/cubemaps";
+
 private:
     // Constants
-    const std::string defaultScenesPath = "assets/scenes";
 
     // Variables
     int& shaderProgramId;
     std::string assetsBasePath = defaultScenesPath;
 
-    GLFWwindow* sceneWindow;
-
-    int NUM_OF_LIGHTS = 0;
+    GLFWwindow* sceneWindow = nullptr;
 
     LightManager* lightManager = NULL;
 
-    // Functions
+    bool turnOnLights = false;
+    bool drawLightsToModels = false;
+
+    int NUM_OF_LIGHTS = 0;
 
 };
 

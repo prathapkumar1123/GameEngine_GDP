@@ -118,7 +118,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Extern\lib\Debug_x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc130-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -137,7 +137,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Extern\lib\Release_x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc130-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -153,16 +153,21 @@
     <ClCompile Include="Graphics\LightsManager\LightHelper.cpp" />
     <ClCompile Include="Graphics\LightsManager\LightManager.cpp" />
     <ClCompile Include="Graphics\ShaderManager\ShaderManager.cpp" />
+    <ClCompile Include="Graphics\TextureManager\C24BitBMPpixel.cpp" />
+    <ClCompile Include="Graphics\TextureManager\cBasicTextureManager.cpp" />
+    <ClCompile Include="Graphics\TextureManager\CTextureFromBMP.cpp" />
     <ClCompile Include="Graphics\VAOManager\VAOManager.cpp" />
+    <ClCompile Include="GameEngine\HRTimer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Graphics\GameObject\Mesh.cpp" />
     <ClCompile Include="Physics\cPhysics_BasicTests.cpp" />
     <ClCompile Include="Physics\cPhysics_IntersectionTests.cpp" />
     <ClCompile Include="Physics\PhysicsEngine.cpp" />
-    <ClCompile Include="Physics\QuadMap.cpp" />
     <ClCompile Include="Physics\sPhysicsProperties.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragment_shader.glsl" />
+    <None Include="assets\shaders\geometryPassThrough.glsl" />
     <None Include="assets\shaders\vertex_shader.glsl" />
     <None Include="packages.config" />
   </ItemGroup>
@@ -176,16 +181,20 @@
     <ClInclude Include="GameEngine\GameEngine.h" />
     <ClInclude Include="GameEngine\GLRenderer.h" />
     <ClInclude Include="Game\SceneLevel1.h" />
-    <ClInclude Include="Graphics\GameObject\eMesh.h" />
     <ClInclude Include="Graphics\GameObject\GameObject.h" />
     <ClInclude Include="Graphics\LightsManager\LightHelper.h" />
     <ClInclude Include="Graphics\LightsManager\LightManager.h" />
     <ClInclude Include="Graphics\ShaderManager\ShaderManager.h" />
+    <ClInclude Include="Graphics\TextureManager\C24BitBMPpixel.h" />
+    <ClInclude Include="Graphics\TextureManager\cBasicTextureManager.h" />
+    <ClInclude Include="Graphics\TextureManager\CTextureFromBMP.h" />
     <ClInclude Include="Graphics\VAOManager\VAOManager.h" />
+    <ClInclude Include="GameEngine\HRTimer.h" />
+    <ClInclude Include="Graphics\GameObject\Mesh.h" />
     <ClInclude Include="Physics\OctaMap.h" />
+    <ClInclude Include="Physics\OctMap.h" />
     <ClInclude Include="Physics\PhysicsEngine.h" />
     <ClInclude Include="Physics\iPhysicsMesh.h" />
-    <ClInclude Include="Physics\QuadMap.h" />
     <ClInclude Include="Physics\sPhysicsProperties.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

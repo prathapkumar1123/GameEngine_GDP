@@ -38,13 +38,13 @@ public:
     float yaw;
     float pitch;
 
+    float movementSpeed = 0.01f;
+    float sensitivity = 1.0f;
+
 private:
     Camera();
 
     void updateCameraVectors();
-
-    float movementSpeed = 0.01f;
-    float sensitivity = 1.0f;
 
     GLFWwindow* window;
 };
